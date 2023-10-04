@@ -8,6 +8,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+
+	db "Auto_Bangumi/v2/database"
 )
 
 func host_ip() string {
@@ -24,17 +26,25 @@ func host_ip() string {
 
 }
 
+// Faster to compile first at startup
+var index = pongo2.Must(pongo2.FromFile("./dist/index.html"))
+
 func templater(w http.ResponseWriter, r *http.Request) {
-	err := pongo2.Must(pongo2.FromFile("./dist/index.html")).
-		ExecuteWriter(pongo2.Context{"query": r.FormValue("query")}, w)
+	err := index.ExecuteWriter(pongo2.Context{"query": r.FormValue("query")}, w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 func main() {
+	// Database Setup
+	go db.Init()
+	defer db.Conn.Close()
+
+	// Routing Setup
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	router := chi.NewRouter()
+
 	router.Handle("/assets/*", http.StripPrefix("/assets/", http.FileServer(http.Dir("./dist/assets"))))
 	router.Handle("/images/*", http.StripPrefix("/images/", http.FileServer(http.Dir("./dist/images"))))
 	router.Get("/", templater)
