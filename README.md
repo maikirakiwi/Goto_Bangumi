@@ -4,23 +4,26 @@
 </p>
 <p align="center">
     <img title="docker build version" src="https://img.shields.io/docker/v/estrellaxd/auto_bangumi" alt="">
-    <img title="release date" src="https://img.shields.io/github/release-date/estrellaxd/auto_bangumi" alt="">
+    <img title="release date" src="https://img.shields.io/github/release-date/maikirakiwi/Goto_Bangumi" alt="">
     <img title="docker pull" src="https://img.shields.io/docker/pulls/estrellaxd/auto_bangumi" alt="">
-    <img title="python version" src="https://img.shields.io/badge/python-3.11-blue" alt="">
+    <img title="go version" src="https://img.shields.io/github/go-mod/go-version/maikirakiwi/Goto_Bangumi/go-main%2Fgo_backend?label=go" alt="">
 </p>
 
 <p align="center">
-  <a href="https://www.autobangumi.org">官方网站</a> | <a href="https://www.autobangumi.org/deploy/quick-start.html">快速开始</a> | <a href="https://www.autobangumi.org/changelog/3.0.html">更新日志</a> | <a href="https://t.me/autobangumi">TG 群组</a>
+  <a href="https://www.autobangumi.org">官方网站</a> | <a href="https://t.me/autobangumi">TG 群组</a>
 </p>
 
 # 项目说明
 
 <p align="center">
     <img title="AutoBangumi" src="docs/image/preview/window.png" alt="" width=75%>
+    <img title="Gopher" src="docs/image/preview/gopher.svg" alt="" width=20%>
 </p>
 
-本项目是基于 RSS 的全自动追番整理下载工具。只需要在 [Mikan Project][mikan] 等网站上订阅番剧，就可以全自动追番。
+本项目是基于 AutoBangumi 的 Golang 后端实现。只需要在 [Mikan Project][mikan] 等网站上订阅番剧，就可以全自动追番。
 并且整理完成的名称和目录可以直接被 [Plex][plex]、[Jellyfin][plex] 等媒体库软件识别，无需二次刮削。
+
+**非完全兼容 AutoBangumi，具体文档 TBA。**
 
 ## AutoBangumi 功能说明
 
@@ -62,32 +65,28 @@
 
 ## 相关群组
 
-- 更新推送：[Telegram Channel](https://t.me/autobangumi_update)
 - Bug 反馈群：[Telegram](https://t.me/+yNisOnDGaX5jMTM9)
-
-## [Roadmap](https://github.com/users/EstrellaXD/projects/2)
-
 
 ***计划开发的功能：***
 
-- Transmission 的支持。
+- TBA
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=EstrellaXD/Auto_Bangumi&type=Date)](https://star-history.com/#EstrellaXD/Auto_Bangumi)
+[![Star History Chart](https://api.star-history.com/svg?repos=maikirakiwi/Goto_Bangumi&type=Date)](https://star-history.com/#maikirakiwi/Goto_Bangumi)
 
 ## 贡献
 
-欢迎提供 ISSUE 或者 PR, 贡献代码前建议阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。
+欢迎提供 ISSUE 或者 PR。
 
 贡献者名单请见：
 
-<a href="https://github.com/EstrellaXD/Auto_Bangumi/graphs/contributors"><img src="https://contrib.rocks/image?repo=EstrellaXD/Auto_Bangumi"></a>
+<a href="https://github.com/maikirakiwi/Goto_Bangumi/graphs/contributors"><img src="https://contrib.rocks/image?repo=maikirakiwi/Goto_Bangumi"></a>
 
 
-## Licence
+## Licenses
 
-[MIT licence](https://github.com/EstrellaXD/Auto_Bangumi/blob/main/LICENSE)
+[MIT License](https://github.com/EstrellaXD/Auto_Bangumi/blob/main/LICENSE)
 
 [mikan]: https://mikanani.me
 [plex]: https://plex.tv
