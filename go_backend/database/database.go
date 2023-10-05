@@ -3,7 +3,9 @@ package database
 import (
 	"os"
 
-	"github.com/ostafen/clover"
+	"github.com/ostafen/clover/v2"
+	"github.com/ostafen/clover/v2/document"
+	"github.com/ostafen/clover/v2/query"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,7 +21,7 @@ func first_run() {
 		// Default user is admin/adminadmin
 		db.CreateCollection("users")
 
-		commit := clover.NewDocument()
+		commit := document.NewDocument()
 		commit.Set("username", "admin")
 		password, _ := bcrypt.GenerateFromPassword([]byte("adminadmin"), bcrypt.DefaultCost)
 		commit.Set("password", password)
@@ -42,4 +44,8 @@ func Init() {
 	if err != nil {
 		log.Fatal().Msgf("Error opening database: %s", err.Error())
 	}
+}
+
+func findOne(collection string, field string, equ string) (document.Document, error) {
+	return query.NewQuery("todos").Where(query.Field("completed").Eq(false))
 }
