@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"Auto_Bangumi/v2/api"
 	db "Auto_Bangumi/v2/database"
 )
 
@@ -47,6 +48,7 @@ func main() {
 
 	router.Handle("/assets/*", http.StripPrefix("/assets/", http.FileServer(http.Dir("./dist/assets"))))
 	router.Handle("/images/*", http.StripPrefix("/images/", http.FileServer(http.Dir("./dist/images"))))
+	router.Post("/api/v1/auth/login", api.AuthLogin)
 	router.Get("/", templater)
 	log.Fatal().Msg(http.ListenAndServe(host_ip()+":7892", router).Error())
 	log.Warn().Msg("Warning message")

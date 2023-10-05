@@ -217,3 +217,4 @@ dev-dist
 # test file
 test.*
 test_*
+go_backend/data/data.db

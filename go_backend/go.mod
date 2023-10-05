@@ -5,6 +5,7 @@ go 1.21.1
 require (
 	github.com/flosch/pongo2/v6 v6.0.0
 	github.com/go-chi/chi/v5 v5.0.10
+	github.com/google/uuid v1.1.2
 	github.com/ostafen/clover/v2 v2.0.0-alpha.3
 	github.com/rs/zerolog v1.31.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
