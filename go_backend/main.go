@@ -27,8 +27,9 @@ func host_ip() string {
 
 func main() {
 	// Database Setup
-	go db.Init()
+	db.Init()
 	defer db.Teardown()
+	log.Info().Msg("Database initialized")
 
 	// Routing Setup
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)

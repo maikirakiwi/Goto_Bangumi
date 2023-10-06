@@ -10,6 +10,8 @@ import (
 	"github.com/patrickmn/go-cache"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/bcrypt"
+
+	"Auto_Bangumi/v2/models"
 )
 
 // Global db conn
@@ -38,9 +40,17 @@ func firstRun() {
 	db.InsertOne("users", commit)
 
 	// Default collections
+	db.CreateCollection("config")
 	db.CreateCollection("sessions")
+	db.CreateCollection("bangumi")
 	db.CreateCollection("torrents")
 	db.CreateCollection("rss")
+
+	cfg := document.NewDocument()
+	cfg.Set("backend", "go")
+	cfg.Set("content", models.InitConfigModel())
+	db.InsertOne("config", cfg)
+
 	db.Close()
 
 }
@@ -59,6 +69,12 @@ func Init() {
 	// Have to be ran every time
 	Cache = cache.New(7*24*time.Hour, 10*time.Minute)
 	Cache.SetDefault("activeUser", "")
+
+	cfg, err := Conn.FindFirst(query.NewQuery("config").Where(query.Field("backend").Eq("go")))
+	if err != nil {
+		log.Fatal().Msgf("Error getting config [Init]: %s", err.Error())
+	}
+	Cache.SetDefault("config", cfg.Get("content"))
 }
 
 func Teardown() {
@@ -66,13 +82,17 @@ func Teardown() {
 	Cache.Flush()
 }
 
-func FindOne(collection string, field string, equ string) (*document.Document, error) {
-	doc, err := Conn.FindFirst(query.NewQuery(collection).Where(query.Field(field).Eq(equ)))
+func FindOne(collection string, key string, value string) (*document.Document, error) {
+	doc, err := Conn.FindFirst(query.NewQuery(collection).Where(query.Field(key).Eq(value)))
 	if err != nil {
 		return nil, err
 	} else {
 		return doc, nil
 	}
+}
+
+func UpdateOne(collection string, key string, value string, changingKey string, changingValue interface{}) error {
+	return Conn.Update(query.NewQuery(collection).Where(query.Field(key).Eq(value)), map[string]interface{}{changingKey: changingValue})
 }
 
 func InsertOne(collection string, field string, value string, ttl time.Duration) (string, error) {

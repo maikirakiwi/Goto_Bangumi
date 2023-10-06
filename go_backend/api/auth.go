@@ -2,7 +2,6 @@ package api
 
 import (
 	"crypto/rand"
-	"encoding/json"
 	"math/big"
 	"net/http"
 	"time"
@@ -13,7 +12,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	db "Auto_Bangumi/v2/database"
-	models "Auto_Bangumi/v2/models"
 )
 
 var jwtKey = generateKey()
@@ -25,23 +23,6 @@ func generateKey() []byte {
 		log.Fatal().Msg(err.Error())
 	}
 	return bytes
-}
-
-func writeResponse(w http.ResponseWriter, r *http.Request, statusCode int, msg_en string, msg_zh string) {
-	response, _ := json.Marshal(models.NewResponseModel(statusCode, msg_en, msg_zh))
-	w.WriteHeader(statusCode)
-	w.Write(response)
-}
-
-func writeJWTResponse(w http.ResponseWriter, r *http.Request, token string, token_type string, message string) {
-	response, _ := json.Marshal(models.NewJWTModel(token, token_type, message))
-	w.Write(response)
-}
-
-func writeException(w http.ResponseWriter, r *http.Request, statusCode int, detail string) {
-	response, _ := json.Marshal(models.NewExceptionModel(statusCode, detail))
-	w.WriteHeader(statusCode)
-	w.Write(response)
 }
 
 // Customized from https://github.com/go-chi/jwtauth/blob/v5.1.1/jwtauth.go#L161
@@ -90,8 +71,9 @@ func refreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 	cookie := http.Cookie{}
 	cookie.Name = "token"
 	_, cookie.Value, _ = createAccessToken(activeUser.(string))
-	cookie.Expires = time.Now().Add(7 * 24 * time.Hour)
+	cookie.MaxAge = 7 * 24 * 60 * 60
 	cookie.HttpOnly = true
+	cookie.Path = "/"
 	http.SetCookie(w, &cookie)
 
 	writeJWTResponse(w, r, cookie.Value, "Bearer", "")
@@ -156,6 +138,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	cookie.Name = "token"
 	cookie.Value = ""
 	cookie.MaxAge = -1
+	cookie.Path = "/"
 	cookie.HttpOnly = true
 	http.SetCookie(w, &cookie)
 

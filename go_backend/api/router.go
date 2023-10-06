@@ -44,6 +44,8 @@ func Router() http.Handler {
 		// Routes
 		r.Get("/api/v1/auth/refresh_token", refreshTokenHandler)
 		r.Get("/api/v1/auth/logout", logoutHandler)
+		r.Get("/api/v1/config/get", GetConfigHandler)
+		r.Patch("/api/v1/config/update", UpdateConfigHandler)
 
 	})
 
