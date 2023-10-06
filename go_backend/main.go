@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
@@ -33,8 +34,15 @@ func main() {
 
 	// Routing Setup
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-
-	log.Fatal().Msg(http.ListenAndServe(host_ip()+":7892", api.Router()).Error())
+	port, exists := db.Cache.Get("config")
+	if exists {
+		// Convert cryptic interface{} to string
+		port = fmt.Sprintf("%.0f", port.(map[string]interface{})["program"].(map[string]interface{})["webui_port"].(float64))
+	} else {
+		port = "7892"
+	}
+	log.Info().Msgf("GotoBangumi Listening on %s", host_ip()+":"+port.(string))
+	log.Fatal().Msg(http.ListenAndServe(host_ip()+":"+port.(string), api.Router()).Error())
 
 	log.Warn().Msg("Warning message")
 	log.Info().Msg("Info message")
