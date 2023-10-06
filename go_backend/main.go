@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -27,6 +28,8 @@ func host_ip() string {
 }
 
 func main() {
+	start := time.Now()
+
 	// Database Setup
 	db.Init()
 	defer db.Teardown()
@@ -41,7 +44,9 @@ func main() {
 	} else {
 		port = "7892"
 	}
-	log.Info().Msgf("GotoBangumi Listening on %s", host_ip()+":"+port.(string))
+
+	elapsed := time.Since(start)
+	log.Info().Msgf(`GotoBangumi Initialized in %s. Listening on %s`, elapsed.String(), host_ip()+":"+port.(string))
 	log.Fatal().Msg(http.ListenAndServe(host_ip()+":"+port.(string), api.Router()).Error())
 
 	log.Warn().Msg("Warning message")
