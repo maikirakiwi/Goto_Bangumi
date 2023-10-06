@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/flosch/pongo2/v6"
-	"github.com/go-chi/chi/v5"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
@@ -27,30 +25,16 @@ func host_ip() string {
 
 }
 
-// Faster to compile first at startup
-var index = pongo2.Must(pongo2.FromFile("./dist/index.html"))
-
-func templater(w http.ResponseWriter, r *http.Request) {
-	err := index.ExecuteWriter(pongo2.Context{"query": r.FormValue("query")}, w)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
 func main() {
 	// Database Setup
 	go db.Init()
-	defer db.Conn.Close()
+	defer db.Teardown()
 
 	// Routing Setup
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	router := chi.NewRouter()
 
-	router.Handle("/assets/*", http.StripPrefix("/assets/", http.FileServer(http.Dir("./dist/assets"))))
-	router.Handle("/images/*", http.StripPrefix("/images/", http.FileServer(http.Dir("./dist/images"))))
-	router.Post("/api/v1/auth/login", api.AuthLogin)
-	router.Get("/", templater)
-	log.Fatal().Msg(http.ListenAndServe(host_ip()+":7892", router).Error())
+	log.Fatal().Msg(http.ListenAndServe(host_ip()+":7892", api.Router()).Error())
+
 	log.Warn().Msg("Warning message")
 	log.Info().Msg("Info message")
 

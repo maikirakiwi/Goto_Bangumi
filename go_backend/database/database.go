@@ -7,6 +7,7 @@ import (
 	"github.com/ostafen/clover/v2"
 	"github.com/ostafen/clover/v2/document"
 	"github.com/ostafen/clover/v2/query"
+	"github.com/patrickmn/go-cache"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -14,8 +15,9 @@ import (
 // Global db conn
 
 var Conn *clover.DB
+var Cache *cache.Cache
 
-func first_run() {
+func firstRun() {
 	err := os.Mkdir("./data", 0755)
 	if err != nil {
 		log.Fatal().Msgf("Error creating data directory: %s", err.Error())
@@ -45,7 +47,7 @@ func first_run() {
 
 func Init() {
 	if _, err := os.Stat("./data"); err != nil {
-		first_run()
+		firstRun()
 	}
 
 	var err error
@@ -53,6 +55,15 @@ func Init() {
 	if err != nil {
 		log.Fatal().Msgf("Error opening database: %s", err.Error())
 	}
+
+	// Have to be ran every time
+	Cache = cache.New(7*24*time.Hour, 10*time.Minute)
+	Cache.SetDefault("activeUser", "")
+}
+
+func Teardown() {
+	Conn.Close()
+	Cache.Flush()
 }
 
 func FindOne(collection string, field string, equ string) (*document.Document, error) {
