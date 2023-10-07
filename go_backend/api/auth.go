@@ -2,6 +2,7 @@ package api
 
 import (
 	"crypto/rand"
+	"encoding/json"
 	"math/big"
 	"net/http"
 	"time"
@@ -61,22 +62,26 @@ func createAccessToken(username string) (jwt.Token, string, error) {
 	return jwtInstance.Encode(map[string]interface{}{"sub": username, "exp": time.Now().Add(7 * 24 * time.Hour).Unix()})
 }
 
+func setTokenCookie(w http.ResponseWriter, r *http.Request, token string) {
+	cookie := http.Cookie{}
+	cookie.Name = "token"
+	cookie.Value = token
+	cookie.MaxAge = 7 * 24 * 60 * 60
+	cookie.HttpOnly = true
+	cookie.Path = "/"
+	http.SetCookie(w, &cookie)
+}
+
 func refreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 	activeUser, exists := db.Cache.Get("activeUser")
 	if !exists {
 		writeException(w, r, 500, "Internal Server Error")
 		return
 	}
+	_, token, _ := createAccessToken(activeUser.(string))
+	setTokenCookie(w, r, token)
 
-	cookie := http.Cookie{}
-	cookie.Name = "token"
-	_, cookie.Value, _ = createAccessToken(activeUser.(string))
-	cookie.MaxAge = 7 * 24 * 60 * 60
-	cookie.HttpOnly = true
-	cookie.Path = "/"
-	http.SetCookie(w, &cookie)
-
-	writeJWTResponse(w, r, cookie.Value, "Bearer", "")
+	writeJWTResponse(w, r, token, "Bearer", "")
 }
 
 func randomSleep() {
@@ -148,4 +153,31 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Blame frontend for not handling this properly
 	writeJWTResponse(w, r, "", "", "logout success")
+}
+
+func updateUserHandler(w http.ResponseWriter, r *http.Request) {
+	var form map[string]interface{}
+	err := json.NewDecoder(r.Body).Decode(&form)
+
+	if err != nil || len(form["username"].(string)) > 20 || len(form["username"].(string)) < 4 || len(form["password"].(string)) < 8 {
+		writeException(w, r, 500, "Internal Server Error")
+		return
+	}
+	old_user, exists := db.Cache.Get("activeUser")
+	if !exists {
+		writeException(w, r, 500, "Internal Server Error")
+		return
+	}
+	if activeUser, exists := db.Cache.Get("activeUser"); exists && activeUser != form["username"].(string) {
+		db.Cache.SetDefault("activeUser", form["username"].(string))
+	}
+
+	password, _ := bcrypt.GenerateFromPassword([]byte(form["password"].(string)), bcrypt.DefaultCost)
+	db.UpdateOne("users", "username", old_user.(string), "password", password)
+	db.UpdateOne("users", "username", old_user.(string), "username", form["username"].(string))
+
+	new_user, _ := db.Cache.Get("activeUser")
+	_, token, _ := createAccessToken(new_user.(string))
+	setTokenCookie(w, r, token)
+	writeJWTResponse(w, r, token, "Bearer", "update success")
 }

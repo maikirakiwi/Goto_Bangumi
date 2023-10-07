@@ -267,7 +267,7 @@ func testContent() {
 }
 
 func Init() {
-	if os.Args[1] == "dev" {
+	if len(os.Args) > 1 && os.Args[1] == "dev" {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 		log.Info().Msg("Development mode detected. Skipping JWT auth; Removing data directory; Adding sample data.")
 		err := os.RemoveAll("./data")

@@ -39,7 +39,7 @@ func Router() http.Handler {
 	// Secured routes
 	r.Group(func(r chi.Router) {
 		// jwt middlewares, disabled in dev mode
-		if os.Args[1] != "dev" {
+		if len(os.Args) > 1 && os.Args[1] != "dev" {
 			r.Use(jwtVerifier(jwtInstance))
 			r.Use(verifyAccessToken)
 		}
@@ -48,6 +48,7 @@ func Router() http.Handler {
 		r.Route("/api/v1/auth", func(r chi.Router) {
 			r.Get("/refresh_token", refreshTokenHandler)
 			r.Get("/logout", logoutHandler)
+			r.Post("/update", updateUserHandler)
 		})
 
 		// ./config.go
