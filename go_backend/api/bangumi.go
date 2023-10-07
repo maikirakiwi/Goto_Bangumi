@@ -12,8 +12,6 @@ import (
 )
 
 func getAllBangumiHandler(w http.ResponseWriter, r *http.Request) {
-	//json.Unmarshal([]byte(test), &models.Bangumi{})
-
 	res, err := db.Conn.FindAll(query.NewQuery("bangumi"))
 	if err != nil {
 		log.Error().Msgf("Error on /api/v1/bangumi/get/all: %s", err)

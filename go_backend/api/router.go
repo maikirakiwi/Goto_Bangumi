@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/flosch/pongo2/v6"
 	"github.com/go-chi/chi/v5"
@@ -37,9 +38,11 @@ func Router() http.Handler {
 
 	// Secured routes
 	r.Group(func(r chi.Router) {
-		// jwt middlewares
-		r.Use(jwtVerifier(jwtInstance))
-		r.Use(verifyAccessToken)
+		// jwt middlewares, disabled in dev mode
+		if os.Args[1] != "dev" {
+			r.Use(jwtVerifier(jwtInstance))
+			r.Use(verifyAccessToken)
+		}
 
 		// ./auth.go
 		r.Route("/api/v1/auth", func(r chi.Router) {

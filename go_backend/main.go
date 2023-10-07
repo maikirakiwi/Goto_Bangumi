@@ -33,20 +33,20 @@ func main() {
 	// Database Setup
 	db.Init()
 	defer db.Teardown()
-	log.Info().Msg("Database initialized")
+	log.Info().Msg("Database Initialized.")
 
 	// Routing Setup
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	port, exists := db.Cache.Get("config")
 	if exists {
 		// Convert cryptic interface{} to string
-		port = fmt.Sprintf("%.0f", port.(map[string]interface{})["program"].(map[string]interface{})["webui_port"].(float64))
+		port = fmt.Sprintf("%d", port.(map[string]interface{})["program"].(map[string]interface{})["webui_port"].(int64))
 	} else {
 		port = "7892"
 	}
 
 	elapsed := time.Since(start)
-	log.Info().Msgf(`GotoBangumi Initialized in %s. Listening on %s`, elapsed.String(), host_ip()+":"+port.(string))
+	log.Info().Msgf(`GotoBangumi Initialized in %s. Listening on %s`, elapsed.String(), host_ip()+":"+port.(string)+".")
 	log.Fatal().Msg(http.ListenAndServe(host_ip()+":"+port.(string), api.Router()).Error())
 
 	log.Warn().Msg("Warning message")

@@ -1,65 +1,66 @@
 package models
 
-import (
-	"encoding/json"
-)
+type Config struct {
+	Program       map[string]interface{} `json:"program"`
+	Downloader    map[string]interface{} `json:"downloader"`
+	RssParser     map[string]interface{} `json:"rss_parser"`
+	BangumiManage map[string]interface{} `json:"bangumi_manage"`
+	Log           map[string]interface{} `json:"log"`
+	Proxy         map[string]interface{} `json:"proxy"`
+	Notification  map[string]interface{} `json:"notification"`
+}
 
-// Cursed but too lazy
 func InitConfigModel() map[string]interface{} {
-	default_config := `{
-		"program": {
-			"sleep_time": 7200,
-			"times": 20,
-			"webui_port": 7892,
-			"data_version": 4
+	return map[string]interface{}{
+		"program": map[string]interface{}{
+			"sleep_time":   7200,
+			"times":        20,
+			"webui_port":   7892,
+			"data_version": 4,
 		},
-		"downloader": {
-			"type": "qbittorrent",
-			"host": "127.0.0.1:8080",
+		"downloader": map[string]interface{}{
+			"type":     "qbittorrent",
+			"host":     "127.0.0.1:8080",
 			"username": "admin",
 			"password": "adminadmin",
-			"path": "/downloads/Bangumi",
-			"ssl": false
+			"path":     "/downloads/Bangumi",
+			"ssl":      false,
 		},
-		"rss_parser": {
-			"enable": true,
-			"type": "mikan",
-			"custom_url": "mikanani.me",
-			"token": "",
+		"rss_parser": map[string]interface{}{
+			"enable":      true,
+			"type":        "mikan",
+			"custom_url":  "mikanani.me",
+			"token":       "",
 			"enable_tmdb": false,
-			"filter": [
+			"filter": []interface{}{
 				"720",
-				"\\d+-\\d+"
-			],
-			"language": "zh"
+				"\\d+-\\d+",
+			},
+			"language": "zh",
 		},
-		"bangumi_manage": {
-			"enable": true,
-			"eps_complete": false,
-			"rename_method": "pn",
-			"group_tag": false,
-			"remove_bad_torrent": false
+		"bangumi_manage": map[string]interface{}{
+			"enable":             true,
+			"eps_complete":       false,
+			"rename_method":      "pn",
+			"group_tag":          false,
+			"remove_bad_torrent": false,
 		},
-		"log": {
-			"debug_enable": false
+		"log": map[string]interface{}{
+			"debug_enable": false,
 		},
-		"proxy": {
-			"enable": false,
-			"type": "http",
-			"host": "",
-			"port": 1080,
+		"proxy": map[string]interface{}{
+			"enable":   false,
+			"type":     "http",
+			"host":     "",
+			"port":     1080,
 			"username": "",
-			"password": ""
+			"password": "",
 		},
-		"notification": {
-			"enable": false,
-			"type": "telegram",
-			"token": "",
-			"chat_id": ""
-		}
-	}`
-	var cfg map[string]interface{}
-	json.Unmarshal([]byte(default_config), &cfg)
-
-	return cfg
+		"notification": map[string]interface{}{
+			"enable":  false,
+			"type":    "telegram",
+			"token":   "",
+			"chat_id": "",
+		},
+	}
 }
