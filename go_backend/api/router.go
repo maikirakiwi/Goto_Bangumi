@@ -60,8 +60,8 @@ func Router() http.Handler {
 		// ./bangumi.go
 		r.Route("/api/v1/bangumi", func(r chi.Router) {
 			r.Get("/get/all", getAllBangumiHandler)
+			r.Get("/get/{bangumi_id}", getBangumiHandler)
 			/*
-				r.Get("/get/{bangumi_id}", GetConfigHandler)
 				r.Patch("/update/{bangumi_id}", GetConfigHandler)
 				r.Delete("/delete/{bangumi_id}", GetConfigHandler)
 				r.Delete("/delete/many", GetConfigHandler)
