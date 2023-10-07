@@ -304,7 +304,7 @@ func Teardown() {
 	Cache.Flush()
 }
 
-func FindOne(collection string, key string, value string) (*document.Document, error) {
+func FindOne(collection string, key string, value interface{}) (*document.Document, error) {
 	doc, err := Conn.FindFirst(query.NewQuery(collection).Where(query.Field(key).Eq(value)))
 	if err != nil {
 		return nil, err
@@ -313,11 +313,11 @@ func FindOne(collection string, key string, value string) (*document.Document, e
 	}
 }
 
-func UpdateOne(collection string, key string, value string, changingKey string, changingValue interface{}) error {
+func UpdateOne(collection string, key string, value interface{}, changingKey string, changingValue interface{}) error {
 	return Conn.Update(query.NewQuery(collection).Where(query.Field(key).Eq(value)), map[string]interface{}{changingKey: changingValue})
 }
 
-func InsertOne(collection string, field string, value string, ttl time.Duration) (string, error) {
+func InsertOne(collection string, field string, value interface{}, ttl time.Duration) (string, error) {
 	doc := document.NewDocument()
 	doc.Set(field, value)
 	// ttl = -1 means no ttl
