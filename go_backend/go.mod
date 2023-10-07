@@ -3,6 +3,7 @@ module Auto_Bangumi/v2
 go 1.21.1
 
 require (
+	github.com/fatih/structs v1.1.0
 	github.com/flosch/pongo2/v6 v6.0.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/jwtauth/v5 v5.1.1

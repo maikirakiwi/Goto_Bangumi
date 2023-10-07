@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/fatih/structs"
 	"github.com/go-chi/chi/v5"
 	"github.com/ostafen/clover/v2/query"
 	"github.com/rs/zerolog/log"
@@ -40,18 +41,17 @@ func getAllBangumiHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getBangumiHandler(w http.ResponseWriter, r *http.Request) {
-	bangumiID := chi.URLParam(r, "bangumi_id")
-	bangumiINT, err := strconv.Atoi(bangumiID)
+	id, err := fetchBangumiID(r)
 	if err != nil {
 		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %s", err)
-		writeResponse(w, r, 406, fmt.Sprintf("Can't find data with %s", bangumiID), fmt.Sprintf("无法找到 id %s 的数据", bangumiID))
+		writeResponse(w, r, 406, fmt.Sprintf("Can't find data with %d", id), fmt.Sprintf("无法找到 id %d 的数据", id))
 		return
 	}
 
-	res, err := db.FindOne("bangumi", "ID", bangumiINT)
+	res, err := db.FindOne("bangumi", "ID", id)
 	if err != nil || res == nil {
 		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %s", err)
-		writeResponse(w, r, 406, fmt.Sprintf("Can't find data with %s", bangumiID), fmt.Sprintf("无法找到 id %s 的数据", bangumiID))
+		writeResponse(w, r, 406, fmt.Sprintf("Can't find data with %d", id), fmt.Sprintf("无法找到 id %d 的数据", id))
 		return
 	}
 
@@ -65,4 +65,23 @@ func getBangumiHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(json)
 
+}
+
+func fetchBangumiID(r *http.Request) (int, error) {
+	return strconv.Atoi(chi.URLParam(r, "bangumi_id"))
+}
+
+func updateBangumiHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := fetchBangumiID(r)
+	if err != nil {
+		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %d", err)
+		writeResponse(w, r, 406, fmt.Sprintf("Can't find data with %d", id), fmt.Sprintf("无法找到 id %d 的数据", id))
+		return
+	}
+	body := models.BangumiUpdate{}
+	json.NewDecoder(r.Body).Decode(&body)
+	db.Conn.Update(query.NewQuery("bangumi").Where(query.Field("ID").Eq(id)), structs.Map(body))
+	// TO DO: Implement save path update logic from bangumi.py
+
+	writeResponse(w, r, 200, "Update bangumi successfully.", "更新番剧成功。")
 }

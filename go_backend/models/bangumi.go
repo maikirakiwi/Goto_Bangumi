@@ -49,24 +49,24 @@ func (b *Bangumi) FromDocument(d *document.Document) *Bangumi {
 }
 
 type BangumiUpdate struct {
-	OfficialTitle string
-	Year          string
-	TitleRaw      string
-	Season        int
-	SeasonRaw     string
-	GroupName     string
-	Dpi           string
-	Source        string
-	Subtitle      string
-	EpsCollect    bool
-	Offset        int
-	Filter        string
-	RssLink       string
-	PosterLink    string
-	Added         bool
-	RuleName      string
-	SavePath      string
-	Deleted       bool
+	OfficialTitle string `json:"official_title" clover:"OfficialTitle"`
+	Year          string `json:"year" clover:"Year"`
+	TitleRaw      string `json:"title_raw" clover:"TitleRaw"`
+	Season        int64  `json:"season" clover:"Season"`
+	SeasonRaw     string `json:"season_raw" clover:"SeasonRaw"`
+	GroupName     string `json:"group_name" clover:"GroupName"`
+	Dpi           string `json:"dpi" clover:"Dpi"`
+	Source        string `json:"source" clover:"Source"`
+	Subtitle      string `json:"subtitle" clover:"Subtitle"`
+	EpsCollect    bool   `json:"eps_collect" clover:"EpsCollect"`
+	Offset        int64  `json:"offset" clover:"Offset"`
+	Filter        string `json:"filter" clover:"Filter"`
+	RssLink       string `json:"rss_link" clover:"RssLink"`
+	PosterLink    string `json:"poster_link" clover:"PosterLink"`
+	Added         bool   `json:"added" clover:"Added"`
+	RuleName      string `json:"rule_name" clover:"RuleName"`
+	SavePath      string `json:"save_path" clover:"SavePath"`
+	Deleted       bool   `json:"deleted" clover:"Deleted"`
 }
 
 type Notification struct {
