@@ -41,17 +41,41 @@ func Router() http.Handler {
 		r.Use(jwtVerifier(jwtInstance))
 		r.Use(verifyAccessToken)
 
-		// Routes
-		r.Get("/api/v1/auth/refresh_token", refreshTokenHandler)
-		r.Get("/api/v1/auth/logout", logoutHandler)
-		r.Get("/api/v1/config/get", GetConfigHandler)
-		r.Patch("/api/v1/config/update", UpdateConfigHandler)
+		// ./auth.go
+		r.Route("/api/v1/auth", func(r chi.Router) {
+			r.Get("/refresh_token", refreshTokenHandler)
+			r.Get("/logout", logoutHandler)
+		})
+
+		// ./config.go
+		r.Route("/api/v1/config", func(r chi.Router) {
+			r.Get("/get", GetConfigHandler)
+			r.Patch("/update", UpdateConfigHandler)
+		})
+
+		// ./bangumi.go
+		r.Route("/api/v1/bangumi", func(r chi.Router) {
+			r.Get("/get/all", getAllBangumiHandler)
+			/*
+				r.Get("/get/{bangumi_id}", GetConfigHandler)
+				r.Patch("/update/{bangumi_id}", GetConfigHandler)
+				r.Delete("/delete/{bangumi_id}", GetConfigHandler)
+				r.Delete("/delete/many", GetConfigHandler)
+				r.Delete("/disable/{bangumi_id}", GetConfigHandler)
+				r.Delete("/disable/many", GetConfigHandler)
+				r.Get("/enable/{bangumi_id}", GetConfigHandler)
+				r.Get("/refresh/poster/all", GetConfigHandler)
+				r.Get("/reset/all", GetConfigHandler)
+			*/
+		})
 
 	})
 
 	// Public routes
 	r.Group(func(r chi.Router) {
+		// ./auth.go
 		r.Post("/api/v1/auth/login", loginHandler)
+
 		r.Get("/", templater)
 		r.Handle("/assets/*", http.StripPrefix("/assets/", http.FileServer(http.Dir("./dist/assets"))))
 		r.Handle("/images/*", http.StripPrefix("/images/", http.FileServer(http.Dir("./dist/images"))))
