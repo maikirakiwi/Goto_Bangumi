@@ -14,6 +14,7 @@ require (
 	github.com/sugawarayuuta/sonnet v0.0.0-20231004000330-239c7b6e4ce8
 	golang.org/x/crypto v0.10.0
 	golang.org/x/net v0.10.0
+	golang.org/x/sync v0.1.0
 )
 
 require github.com/google/go-cmp v0.5.8 // indirect

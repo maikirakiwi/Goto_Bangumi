@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -11,7 +14,6 @@ import (
 
 	"Auto_Bangumi/v2/api"
 	db "Auto_Bangumi/v2/database"
-	"Auto_Bangumi/v2/downloaders"
 	"Auto_Bangumi/v2/models"
 )
 
@@ -29,7 +31,34 @@ func host_ip() string {
 
 }
 
+var server *http.Server
+
+// Graceful shutdown handler
 func main() {
+	// Pretty print by default because we don't care about 1ms of performance each log.
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, syscall.SIGINT, syscall.SIGTERM)
+
+	// Start the server in a separate goroutine
+	go Init()
+
+	sig := <-signalCh
+	log.Warn().Msgf("GotoBangumi received signal %v. Hammer timeout is set to 30 seconds.", sig)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	// Catch other errors
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatal().Msgf("GotoBangumi failed to gracefully shutdown: %v", err)
+	}
+
+	log.Info().Msg("GotoBangumi has gracefully shutdown.")
+}
+
+func Init() {
 	start := time.Now()
 
 	// Database Setup
@@ -38,9 +67,8 @@ func main() {
 	log.Info().Msg("Database Initialized.")
 
 	// Qbittorrent Setup
-	downloaders.Init()
+	//downloaders.Init()
 
-	// Routing Setup
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	cfg, exists := db.Cache.Get("config")
 
@@ -50,11 +78,14 @@ func main() {
 		port = fmt.Sprintf("%d", cfg.(models.ConfigModel).Program.WebuiPort)
 	}
 
-	elapsed := time.Since(start)
-	log.Info().Msgf(`GotoBangumi Initialized in %s. Listening on %s`, elapsed.String(), host_ip()+":"+port+".")
-	log.Fatal().Msg(http.ListenAndServe(host_ip()+":"+port, api.Router()).Error())
+	// Register server parameters
+	server = &http.Server{
+		Addr:    host_ip() + ":" + port,
+		Handler: api.Router(),
+	}
 
-	log.Warn().Msg("Warning message")
-	log.Info().Msg("Info message")
-
+	log.Info().Msgf("GotoBangumi initialized in %s. Listening on %s.", time.Since(start).String(), server.Addr)
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatal().Msgf("Error while starting GotoBangumi: %s", err.Error())
+	}
 }

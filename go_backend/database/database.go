@@ -8,7 +8,6 @@ import (
 	"github.com/ostafen/clover/v2/document"
 	"github.com/ostafen/clover/v2/query"
 	"github.com/patrickmn/go-cache"
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	json "github.com/sugawarayuuta/sonnet"
 	"golang.org/x/crypto/bcrypt"
@@ -266,7 +265,6 @@ func testContent() {
 
 func Init() {
 	if len(os.Args) > 1 && os.Args[1] == "dev" {
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 		log.Info().Msg("Development mode detected. Skipping JWT auth; Removing data directory; Adding sample data.")
 		err := os.RemoveAll("./data")
 
