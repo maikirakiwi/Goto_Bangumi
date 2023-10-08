@@ -7,5 +7,5 @@ name = "shell"
 name = "go"
 
   [analyzers.meta]
-  import_root = "github.com/maikirakiwi/Goto_Bangumi/go_backend"
+  import_root = "github.com/maikirakiwi/Goto_Bangumi/tree/go-main/go_backend"
   dependencies_vendored = true
