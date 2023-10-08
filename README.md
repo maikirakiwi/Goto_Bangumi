@@ -3,9 +3,8 @@
     <img src="docs/image/icons/dark-icon.svg#gh-dark-mode-only" width=50%/ alt="">
 </p>
 <p align="center">
-    <img title="docker build version" src="https://img.shields.io/docker/v/estrellaxd/auto_bangumi" alt="">
     <img title="release date" src="https://img.shields.io/github/release-date/maikirakiwi/Goto_Bangumi" alt="">
-    <img title="docker pull" src="https://img.shields.io/docker/pulls/estrellaxd/auto_bangumi" alt="">
+    <img title="active issues" src="https://app.deepsource.com/gh/maikirakiwi/Goto_Bangumi.svg/?label=active+issues&show_trend=true&token=3Yw_e7Z12Jeu2AUix9d-PrHU" alt="">
     <img title="go version" src="https://img.shields.io/github/go-mod/go-version/maikirakiwi/Goto_Bangumi/go-main%2Fgo_backend?label=go" alt="">
 </p>
 
