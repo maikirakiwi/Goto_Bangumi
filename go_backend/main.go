@@ -11,6 +11,7 @@ import (
 
 	"Auto_Bangumi/v2/api"
 	db "Auto_Bangumi/v2/database"
+	"Auto_Bangumi/v2/downloaders"
 	"Auto_Bangumi/v2/models"
 )
 
@@ -37,7 +38,7 @@ func main() {
 	log.Info().Msg("Database Initialized.")
 
 	// Qbittorrent Setup
-	//downloaders.Init()
+	downloaders.Init()
 
 	// Routing Setup
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)

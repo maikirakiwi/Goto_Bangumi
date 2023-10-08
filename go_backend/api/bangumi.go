@@ -100,21 +100,6 @@ func updateBangumiHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse old data to struct
 	oldDataStruct := new(models.Bangumi).FromDocument(oldData)
 
-	// Match torrents list
-	list := dl.GetAllTorrent()
-	if list == nil {
-		log.Error().Msgf("Error on /api/v1/bangumi/update/{bangumi_id}: %s", err)
-		writeException(w, r, 500, "Internal Server Error")
-		return
-	}
-
-	changeQueue := []string{}
-	for _, torrent := range list {
-		if torrent.SavePath == oldDataStruct.SavePath {
-			changeQueue = append(changeQueue, torrent.Hash)
-		}
-	}
-
 	// Generate new path
 	newPath := fmtSavePath(newDataStruct)
 	if newPath == "" {
@@ -123,13 +108,31 @@ func updateBangumiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Move torrent if necessary
-	if len(changeQueue) > 0 {
-		err = dl.Qbit.SetLocation(newPath, changeQueue...)
-		if err != nil {
+	// Check if path changed
+	if oldDataStruct.SavePath != newPath {
+		// Match torrents list
+		list := dl.GetAllTorrent()
+		if list == nil {
 			log.Error().Msgf("Error on /api/v1/bangumi/update/{bangumi_id}: %s", err)
 			writeException(w, r, 500, "Internal Server Error")
 			return
+		}
+
+		changeQueue := []string{}
+		for _, torrent := range list {
+			if torrent.SavePath == oldDataStruct.SavePath {
+				changeQueue = append(changeQueue, torrent.Hash)
+			}
+		}
+
+		// Move torrent
+		if len(changeQueue) > 0 {
+			err = dl.Qbit.SetLocation(newPath, changeQueue...)
+			if err != nil {
+				log.Error().Msgf("Error on /api/v1/bangumi/update/{bangumi_id}: %s", err)
+				writeException(w, r, 500, "Internal Server Error")
+				return
+			}
 		}
 	}
 
