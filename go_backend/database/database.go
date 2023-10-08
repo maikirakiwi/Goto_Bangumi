@@ -49,9 +49,7 @@ func firstRun() {
 	db.CreateCollection("rss")
 
 	// Default settings
-	cfg := document.NewDocument()
-	cfg.Set("backend", "go")
-	cfg.Set("content", models.InitConfigModel())
+	cfg := document.NewDocumentOf(models.InitConfigModel())
 	db.InsertOne("config", cfg)
 
 	db.Close()
@@ -292,11 +290,11 @@ func Init() {
 	Cache = cache.New(7*24*time.Hour, 10*time.Minute)
 	Cache.SetDefault("activeUser", "")
 
-	cfg, err := Conn.FindFirst(query.NewQuery("config").Where(query.Field("backend").Eq("go")))
+	cfg, err := Conn.FindFirst(query.NewQuery("config").Where(query.Field("_id").Exists()))
 	if err != nil {
 		log.Fatal().Msgf("Error getting config [Init]: %s", err.Error())
 	}
-	Cache.SetDefault("config", cfg.Get("content"))
+	Cache.SetDefault("config", new(models.ConfigModel).FromDocument(cfg))
 }
 
 func Teardown() {

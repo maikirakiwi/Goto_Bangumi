@@ -26,7 +26,7 @@ func getAllBangumiHandler(w http.ResponseWriter, r *http.Request) {
 	// Encode list of documents to JSON using Bangumi struct
 	bangumi := []models.Bangumi{}
 	for _, doc := range res {
-		bangumi = append(bangumi, *new(models.Bangumi).FromDocument(doc))
+		bangumi = append(bangumi, new(models.Bangumi).FromDocument(doc))
 	}
 
 	json, err := json.Marshal(bangumi)
@@ -55,7 +55,7 @@ func getBangumiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json, err := json.Marshal(*new(models.Bangumi).FromDocument(res))
+	json, err := json.Marshal(new(models.Bangumi).FromDocument(res))
 	if err != nil {
 		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %s", err)
 		writeException(w, r, 500, "Internal Server Error")

@@ -1,8 +1,13 @@
 package models
 
 type ResponseModel struct {
-	Status_Code int               `json:"status_code"`
-	Content     map[string]string `json:"content"`
+	Status_Code int                 `json:"status_code"`
+	Content     I18nResponseContent `json:"content"`
+}
+
+type I18nResponseContent struct {
+	Msg_en string `json:"msg_en"`
+	Msg_zh string `json:"msg_zh"`
 }
 
 type ExceptionModel struct {
@@ -19,7 +24,10 @@ type JWTModel struct {
 func NewResponseModel(status_code int, msg_en string, msg_zh string) *ResponseModel {
 	return &ResponseModel{
 		Status_Code: status_code,
-		Content:     map[string]string{"msg_en": msg_en, "msg_zh": msg_zh},
+		Content: I18nResponseContent{
+			Msg_en: msg_en,
+			Msg_zh: msg_zh,
+		},
 	}
 }
 

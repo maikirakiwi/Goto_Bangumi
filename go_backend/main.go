@@ -11,6 +11,7 @@ import (
 
 	"Auto_Bangumi/v2/api"
 	db "Auto_Bangumi/v2/database"
+	"Auto_Bangumi/v2/models"
 )
 
 func host_ip() string {
@@ -37,17 +38,17 @@ func main() {
 
 	// Routing Setup
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	port, exists := db.Cache.Get("config")
+	cfg, exists := db.Cache.Get("config")
+
+	// Default port
+	port := "7892"
 	if exists {
-		// Convert cryptic interface{} to string
-		port = fmt.Sprintf("%d", port.(map[string]interface{})["program"].(map[string]interface{})["webui_port"].(int64))
-	} else {
-		port = "7892"
+		port = fmt.Sprintf("%d", cfg.(models.ConfigModel).Program.WebuiPort)
 	}
 
 	elapsed := time.Since(start)
-	log.Info().Msgf(`GotoBangumi Initialized in %s. Listening on %s`, elapsed.String(), host_ip()+":"+port.(string)+".")
-	log.Fatal().Msg(http.ListenAndServe(host_ip()+":"+port.(string), api.Router()).Error())
+	log.Info().Msgf(`GotoBangumi Initialized in %s. Listening on %s`, elapsed.String(), host_ip()+":"+port+".")
+	log.Fatal().Msg(http.ListenAndServe(host_ip()+":"+port, api.Router()).Error())
 
 	log.Warn().Msg("Warning message")
 	log.Info().Msg("Info message")

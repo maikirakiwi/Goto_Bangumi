@@ -24,8 +24,8 @@ type Bangumi struct {
 	Deleted       bool   `json:"deleted" clover:"Deleted"`
 }
 
-func (b *Bangumi) FromDocument(d *document.Document) *Bangumi {
-	return &Bangumi{
+func (b *Bangumi) FromDocument(d *document.Document) Bangumi {
+	return Bangumi{
 		ID:            d.Get("ID").(int64),
 		OfficialTitle: d.Get("OfficialTitle").(string),
 		Year:          d.Get("Year").(string),
