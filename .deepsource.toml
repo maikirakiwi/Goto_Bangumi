@@ -1,5 +1,7 @@
 version = 1
 
+exclude_patterns = ["*.sh"]
+
 [[analyzers]]
 name = "shell"
 
@@ -7,5 +9,5 @@ name = "shell"
 name = "go"
 
   [analyzers.meta]
-  import_root = "github.com/maikirakiwi/Goto_Bangumi/tree/go-main/go_backend"
+  import_root = "github.com/maikirakiwi/Goto_Bangumi"
   dependencies_vendored = true
