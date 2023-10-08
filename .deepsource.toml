@@ -1,0 +1,11 @@
+version = 1
+
+[[analyzers]]
+name = "shell"
+
+[[analyzers]]
+name = "go"
+
+  [analyzers.meta]
+  import_root = "github.com/maikirakiwi/Goto_Bangumi/go_backend"
+  dependencies_vendored = true
