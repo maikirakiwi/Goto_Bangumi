@@ -1,6 +1,8 @@
 package models
 
-import "github.com/ostafen/clover/v2/document"
+import (
+	"github.com/ostafen/clover/v2/document"
+)
 
 type Bangumi struct {
 	ID            int64  `json:"id" clover:"ID"`
@@ -67,6 +69,29 @@ type BangumiUpdate struct {
 	RuleName      string `json:"rule_name" clover:"RuleName"`
 	SavePath      string `json:"save_path" clover:"SavePath"`
 	Deleted       bool   `json:"deleted" clover:"Deleted"`
+}
+
+func (b *BangumiUpdate) FromDocument(d *document.Document) BangumiUpdate {
+	return BangumiUpdate{
+		OfficialTitle: d.Get("OfficialTitle").(string),
+		Year:          d.Get("Year").(string),
+		TitleRaw:      d.Get("TitleRaw").(string),
+		Season:        d.Get("Season").(int64),
+		SeasonRaw:     d.Get("SeasonRaw").(string),
+		GroupName:     d.Get("GroupName").(string),
+		Dpi:           d.Get("Dpi").(string),
+		Source:        d.Get("Source").(string),
+		Subtitle:      d.Get("Subtitle").(string),
+		EpsCollect:    d.Get("EpsCollect").(bool),
+		Offset:        d.Get("Offset").(int64),
+		Filter:        d.Get("Filter").(string),
+		RssLink:       d.Get("RssLink").(string),
+		PosterLink:    d.Get("PosterLink").(string),
+		Added:         d.Get("Added").(bool),
+		RuleName:      d.Get("RuleName").(string),
+		SavePath:      d.Get("SavePath").(string),
+		Deleted:       d.Get("Deleted").(bool),
+	}
 }
 
 type Notification struct {

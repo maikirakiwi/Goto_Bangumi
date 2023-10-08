@@ -36,6 +36,9 @@ func main() {
 	defer db.Teardown()
 	log.Info().Msg("Database Initialized.")
 
+	// Qbittorrent Setup
+	//downloaders.Init()
+
 	// Routing Setup
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	cfg, exists := db.Cache.Get("config")
