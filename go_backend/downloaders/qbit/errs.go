@@ -1,4 +1,4 @@
-package downloaders
+package qbit
 
 import "errors"
 

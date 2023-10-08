@@ -1,7 +1,7 @@
 // Torrent management
 // All Torrent management API methods are under "torrents",
 // e.g.: /api/v2/torrents/methodName.
-package downloaders
+package qbit
 
 import (
 	"fmt"
@@ -308,7 +308,7 @@ func (c *Client) RenameFolder(hash, old, new string) error {
 	return nil
 }
 
-func (c *Client) setLocation(location string, hashes ...string) error {
+func (c *Client) SetLocation(location string, hashes ...string) error {
 	hs := strings.Join(hashes, "|")
 	opt := Optional{
 		"hashes":   hs,

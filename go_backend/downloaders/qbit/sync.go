@@ -1,7 +1,7 @@
 // Sync
 // Sync API implements requests for obtaining changes since the last request. All Sync API methods are under "sync"
 // e.g.: /api/v2/sync/{methodName}
-package downloaders
+package qbit
 
 import (
 	"io"

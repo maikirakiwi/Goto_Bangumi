@@ -1,7 +1,7 @@
 // RSS (experimental)
 // All RSS API methods are under "rss",
 // e.g.: /api/v2/rss/methodName.
-package downloaders
+package qbit
 
 import (
 	"fmt"
