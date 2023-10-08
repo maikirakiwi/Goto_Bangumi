@@ -1,7 +1,6 @@
 package database
 
 import (
-	"encoding/json"
 	"os"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	json "github.com/sugawarayuuta/sonnet"
 	"golang.org/x/crypto/bcrypt"
 
 	"Auto_Bangumi/v2/models"

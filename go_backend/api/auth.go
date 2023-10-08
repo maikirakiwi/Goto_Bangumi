@@ -2,7 +2,6 @@ package api
 
 import (
 	"crypto/rand"
-	"encoding/json"
 	"math/big"
 	"net/http"
 	"time"
@@ -10,6 +9,7 @@ import (
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/lestrrat-go/jwx/v2/jwt"
 	"github.com/rs/zerolog/log"
+	json "github.com/sugawarayuuta/sonnet"
 	"golang.org/x/crypto/bcrypt"
 
 	db "Auto_Bangumi/v2/database"

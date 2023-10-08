@@ -1,9 +1,11 @@
 package api
 
 import (
-	models "Auto_Bangumi/v2/models"
-	"encoding/json"
 	"net/http"
+
+	json "github.com/sugawarayuuta/sonnet"
+
+	models "Auto_Bangumi/v2/models"
 )
 
 func writeResponse(w http.ResponseWriter, r *http.Request, statusCode int, msg_en string, msg_zh string) {

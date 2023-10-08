@@ -11,6 +11,7 @@ require (
 	github.com/ostafen/clover/v2 v2.0.0-alpha.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/rs/zerolog v1.31.0
+	github.com/sugawarayuuta/sonnet v0.0.0-20231004000330-239c7b6e4ce8
 	golang.org/x/crypto v0.10.0
 )
 
