@@ -16,7 +16,15 @@ func Init() {
 	if !exists {
 		log.Fatal().Msg("Config not in cache while initializing Qbittorrent Client.")
 	}
-	cli, err := qbit.NewCli(cfg.(models.ConfigModel).Downloader.Host,
+
+	var host string
+	if !cfg.(models.ConfigModel).Downloader.Ssl {
+		host = "http://" + cfg.(models.ConfigModel).Downloader.Host
+	} else {
+		host = "https://" + cfg.(models.ConfigModel).Downloader.Host
+	}
+
+	cli, err := qbit.NewCli(host,
 		cfg.(models.ConfigModel).Downloader.Username,
 		cfg.(models.ConfigModel).Downloader.Password)
 	if err != nil {
