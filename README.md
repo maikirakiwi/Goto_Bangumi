@@ -19,20 +19,20 @@
     <img title="Gopher" src="docs/image/preview/gopher.svg" alt="" width=19%>
 </p>
 
-本项目是基于 AutoBangumi 的 Golang 后端实现。只需要在 [Mikan Project][mikan] 等网站上订阅番剧，就可以全自动追番。
+本项目是社区基于 [AutoBangumi](https://github.com/EstrellaXD/Auto_Bangumi/) 的 Golang 后端实现。只需要在 [Mikan Project][mikan] 等网站上订阅番剧，就可以全自动追番。
 并且整理完成的名称和目录可以直接被 [Plex][plex]、[Jellyfin][plex] 等媒体库软件识别，无需二次刮削。
 
-**非完全兼容 AutoBangumi，具体文档 TBA。**
+**兼容目标为 [AutoBangumi 3.1.8](https://github.com/EstrellaXD/Auto_Bangumi/releases/tag/3.1.8)，具体文档 TBA。**
 
 ## FAQ (待翻译）
 ### - Why not C/C++/Rust?
-> Golang, in my opinion, achieves a perfect middle ground between DX and Runtime Performance. This is a hobby project to force me relearn the semantics of Golang and so I don't want to make my life harder by trying to be picky about server frameworks or writing high level abstractions when Go's solutions are more than battle-proven.
+> Golang, in my opinion, achieves a perfect middle ground between DX and Runtime Performance. This is a hobby project to force me to relearn the semantics of Golang, and so I don't want to make my life harder by trying to be picky about server frameworks or writing high-level abstractions when Go's solutions are more than battle-proven.
   
 > It also just happens to be about [as performant as Rust](https://youtu.be/Z0GX2mTUtfo) in a Server context.
 ### - Why CloverDB + Go-cache instead of MySQL/Postgre/SQLite/Genji?
 > My initial target was a lightweight embeddable storage solution that also happened to be schemaless. Genji would have been my choice if database/sql or the built-in methods were a little easier to wrap my head around.
 
-> I did attempt some brief tests with SQLite on WAL mode and it didn't significantly outperform my current solution while giving up a lot of DX. Considering there are minimal concurrent reads and even eventually consistent writes are more than capable in a single-user context, I cba.  
+> I did attempt some brief tests with SQLite on WAL mode, and it didn't significantly outperform my current solution while giving up a lot of DX. Considering there are minimal concurrent reads, and even eventually consistent writes are more than capable in a single-user context, I cba.  
 
 ## AutoBangumi 功能说明
 
@@ -74,7 +74,7 @@
 
 ## 相关群组
 
-- Bug 反馈群：[Telegram](https://t.me/+yNisOnDGaX5jMTM9)
+- 前端 Bug 反馈群：[Telegram](https://t.me/+yNisOnDGaX5jMTM9)
 
 ***计划开发的功能：***
 
@@ -95,7 +95,7 @@
 
 ## Licenses
 
-[MIT License](https://github.com/EstrellaXD/Auto_Bangumi/blob/main/LICENSE)
+AutoBangumi & GotoBangumi are licensed under the [MIT License](https://github.com/EstrellaXD/Auto_Bangumi/blob/main/LICENSE)
 
 [mikan]: https://mikanani.me
 [plex]: https://plex.tv
