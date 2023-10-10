@@ -197,6 +197,7 @@ dev-dist
 
 # Editor directories and files
 .vscode/*
+.history/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -216,3 +217,4 @@ dev-dist
 # test file
 test.*
 test_*
+go_backend/data/*
