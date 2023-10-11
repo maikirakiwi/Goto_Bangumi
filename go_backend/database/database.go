@@ -4,10 +4,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/ostafen/clover/v2"
-	"github.com/ostafen/clover/v2/document"
-	"github.com/ostafen/clover/v2/query"
-	"github.com/patrickmn/go-cache"
+	"github.com/objectbox/objectbox-go/objectbox"
 	"github.com/rs/zerolog/log"
 	json "github.com/sugawarayuuta/sonnet"
 	"golang.org/x/crypto/bcrypt"

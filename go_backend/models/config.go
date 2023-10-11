@@ -2,68 +2,70 @@ package models
 
 import "github.com/ostafen/clover/v2/document"
 
+//go:generate go run github.com/objectbox/objectbox-go/cmd/objectbox-gogen
+
 type ConfigModel struct {
-	Program       ProgramConfig       `json:"program" clover:"Program"`
-	Downloader    DownloaderConfig    `json:"downloader" clover:"Downloader"`
-	RssParser     RssParserConfig     `json:"rss_parser" clover:"RssParser"`
-	BangumiManage BangumiManageConfig `json:"bangumi_manage" clover:"BangumiManage"`
-	Log           LogConfig           `json:"log" clover:"Log"`
-	Proxy         ProxyConfig         `json:"proxy" clover:"Proxy"`
-	Notification  NotificationConfig  `json:"notification" clover:"Notification"`
+	Program       ProgramConfig       `json:"program" objectbox:"Program"`
+	Downloader    DownloaderConfig    `json:"downloader" objectbox:"Downloader"`
+	RssParser     RssParserConfig     `json:"rss_parser" objectbox:"RssParser"`
+	BangumiManage BangumiManageConfig `json:"bangumi_manage" objectbox:"BangumiManage"`
+	Log           LogConfig           `json:"log" objectbox:"Log"`
+	Proxy         ProxyConfig         `json:"proxy" objectbox:"Proxy"`
+	Notification  NotificationConfig  `json:"notification" objectbox:"Notification"`
 }
 
 type ProgramConfig struct {
-	RssTime     int64 `json:"rss_time" clover:"RssTime"`
-	RenameTime  int64 `json:"rename_time" clover:"RenameTime"`
-	WebuiPort   int64 `json:"webui_port" clover:"WebuiPort"`
-	DataVersion int64 `json:"data_version" clover:"DataVersion"`
+	RssTime     int64 `json:"rss_time" objectbox:"RssTime"`
+	RenameTime  int64 `json:"rename_time" objectbox:"RenameTime"`
+	WebuiPort   int64 `json:"webui_port" objectbox:"WebuiPort"`
+	DataVersion int64 `json:"data_version" objectbox:"DataVersion"`
 }
 
 type DownloaderConfig struct {
-	Type     string `json:"type" clover:"Type"`
-	Host     string `json:"host" clover:"Host"`
-	Username string `json:"username" clover:"Username"`
-	Password string `json:"password" clover:"Password"`
-	Path     string `json:"path" clover:"Path"`
-	Ssl      bool   `json:"ssl" clover:"Ssl"`
+	Type     string `json:"type" objectbox:"Type"`
+	Host     string `json:"host" objectbox:"Host"`
+	Username string `json:"username" objectbox:"Username"`
+	Password string `json:"password" objectbox:"Password"`
+	Path     string `json:"path" objectbox:"Path"`
+	Ssl      bool   `json:"ssl" objectbox:"Ssl"`
 }
 
 type RssParserConfig struct {
-	Enable     bool          `json:"enable" clover:"Enable"`
-	Type       string        `json:"type" clover:"Type"`
-	CustomUrl  string        `json:"custom_url" clover:"CustomUrl"`
-	Token      string        `json:"token" clover:"Token"`
-	EnableTmdb bool          `json:"enable_tmdb" clover:"EnableTmdb"`
-	Filter     []interface{} `json:"filter" clover:"Filter"`
-	Language   string        `json:"language" clover:"Language"`
+	Enable     bool          `json:"enable" objectbox:"Enable"`
+	Type       string        `json:"type" objectbox:"Type"`
+	CustomUrl  string        `json:"custom_url" objectbox:"CustomUrl"`
+	Token      string        `json:"token" objectbox:"Token"`
+	EnableTmdb bool          `json:"enable_tmdb" objectbox:"EnableTmdb"`
+	Filter     []interface{} `json:"filter" objectbox:"Filter"`
+	Language   string        `json:"language" objectbox:"Language"`
 }
 
 type BangumiManageConfig struct {
-	Enable           bool   `json:"enable" clover:"Enable"`
-	EpsComplete      bool   `json:"eps_complete" clover:"EpsComplete"`
-	RenameMethod     string `json:"rename_method" clover:"RenameMethod"`
-	GroupTag         bool   `json:"group_tag" clover:"GroupTag"`
-	RemoveBadTorrent bool   `json:"remove_bad_torrent" clover:"RemoveBadTorrent"`
+	Enable           bool   `json:"enable" objectbox:"Enable"`
+	EpsComplete      bool   `json:"eps_complete" objectbox:"EpsComplete"`
+	RenameMethod     string `json:"rename_method" objectbox:"RenameMethod"`
+	GroupTag         bool   `json:"group_tag" objectbox:"GroupTag"`
+	RemoveBadTorrent bool   `json:"remove_bad_torrent" objectbox:"RemoveBadTorrent"`
 }
 
 type LogConfig struct {
-	DebugEnable bool `json:"debug_enable" clover:"DebugEnable"`
+	DebugEnable bool `json:"debug_enable" objectbox:"DebugEnable"`
 }
 
 type ProxyConfig struct {
-	Enable   bool   `json:"enable" clover:"Enable"`
-	Type     string `json:"type" clover:"Type"`
-	Host     string `json:"host" clover:"Host"`
-	Port     int64  `json:"port" clover:"Port"`
-	Username string `json:"username" clover:"Username"`
-	Password string `json:"password" clover:"Password"`
+	Enable   bool   `json:"enable" objectbox:"Enable"`
+	Type     string `json:"type" objectbox:"Type"`
+	Host     string `json:"host" objectbox:"Host"`
+	Port     int64  `json:"port" objectbox:"Port"`
+	Username string `json:"username" objectbox:"Username"`
+	Password string `json:"password" objectbox:"Password"`
 }
 
 type NotificationConfig struct {
-	Enable bool   `json:"enable" clover:"Enable"`
-	Type   string `json:"type" clover:"Type"`
-	Token  string `json:"token" clover:"Token"`
-	ChatId string `json:"chat_id" clover:"ChatId"`
+	Enable bool   `json:"enable" objectbox:"Enable"`
+	Type   string `json:"type" objectbox:"Type"`
+	Token  string `json:"token" objectbox:"Token"`
+	ChatId string `json:"chat_id" objectbox:"ChatId"`
 }
 
 func (c *ConfigModel) FromDocument(d *document.Document) ConfigModel {

@@ -1,5 +1,7 @@
 package models
 
+//go:generate go run github.com/objectbox/objectbox-go/cmd/objectbox-gogen
+
 type ResponseModel struct {
 	Status_Code int                 `json:"status_code"`
 	Content     I18nResponseContent `json:"content"`
