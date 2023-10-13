@@ -3,10 +3,13 @@ package api
 import (
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/flosch/pongo2/v6"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
+	"github.com/rs/zerolog/hlog"
+	"github.com/rs/zerolog/log"
 )
 
 // Faster to compile first at startup
@@ -35,6 +38,19 @@ func jwtFromCookie(r *http.Request) string {
 
 func Router() http.Handler {
 	r := chi.NewRouter()
+
+	if len(os.Args) > 1 && os.Args[1] == "dev" {
+		r.Use(hlog.NewHandler(log.Logger))
+		r.Use(hlog.AccessHandler(func(r *http.Request, status, size int, duration time.Duration) {
+			hlog.FromRequest(r).Info().
+				Str("Method", r.Method).
+				Stringer("URI", r.URL).
+				Int("Status", status).
+				Dur("Duration (ms)", duration).
+				Msg("")
+		}))
+		r.Use(hlog.RemoteAddrHandler("ip"))
+	}
 
 	// Secured routes
 	r.Group(func(r chi.Router) {
@@ -72,6 +88,9 @@ func Router() http.Handler {
 				r.Get("/reset/all", GetConfigHandler)
 			*/
 		})
+
+		// ./program.go
+		r.Get("/api/v1/status", ProgramStatusHandler)
 
 	})
 

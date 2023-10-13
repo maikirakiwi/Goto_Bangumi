@@ -13,10 +13,10 @@ type ConfigModel struct {
 }
 
 type ProgramConfig struct {
-	RssTime     int64 `json:"rss_time" clover:"RssTime"`
-	RenameTime  int64 `json:"rename_time" clover:"RenameTime"`
-	WebuiPort   int64 `json:"webui_port" clover:"WebuiPort"`
-	DataVersion int64 `json:"data_version" clover:"DataVersion"`
+	RssTime     int64  `json:"rss_time" clover:"RssTime"`
+	RenameTime  int64  `json:"rename_time" clover:"RenameTime"`
+	WebuiPort   int64  `json:"webui_port" clover:"WebuiPort"`
+	DataVersion string `json:"data_version" clover:"DataVersion"`
 }
 
 type DownloaderConfig struct {
@@ -72,7 +72,7 @@ func (c *ConfigModel) FromDocument(d *document.Document) ConfigModel {
 			RssTime:     d.Get("Program.RssTime").(int64),
 			RenameTime:  d.Get("Program.RenameTime").(int64),
 			WebuiPort:   d.Get("Program.WebuiPort").(int64),
-			DataVersion: d.Get("Program.DataVersion").(int64),
+			DataVersion: d.Get("Program.DataVersion").(string),
 		},
 		Downloader: DownloaderConfig{
 			Type:     d.Get("Downloader.Type").(string),
@@ -124,7 +124,7 @@ func InitConfigModel() *ConfigModel {
 			RssTime:     900,
 			RenameTime:  60,
 			WebuiPort:   7892,
-			DataVersion: 4,
+			DataVersion: "3.1.7",
 		},
 		Downloader: DownloaderConfig{
 			Type:     "qbittorrent",

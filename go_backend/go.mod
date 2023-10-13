@@ -14,7 +14,6 @@ require (
 	github.com/sugawarayuuta/sonnet v0.0.0-20231004000330-239c7b6e4ce8
 	golang.org/x/crypto v0.10.0
 	golang.org/x/net v0.10.0
-	golang.org/x/sync v0.1.0
 )
 
 require github.com/google/go-cmp v0.5.8 // indirect
@@ -43,6 +42,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/rs/xid v1.5.0 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
