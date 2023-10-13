@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/rs/zerolog/log"
 	json "github.com/sugawarayuuta/sonnet"
 
 	db "Auto_Bangumi/v2/database"
@@ -42,13 +43,16 @@ func LogOutputHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogClearHandler(w http.ResponseWriter, r *http.Request) {
+	ClearLog()
+
+	writeResponse(w, r, 200, "Log cleared successfully.", "日志清除成功。")
+}
+
+func ClearLog() {
 	// clear log.txt
 	file, err := os.OpenFile("log.txt", os.O_WRONLY|os.O_TRUNC, 0666)
 	if err != nil {
-		writeResponse(w, r, 500, "Log file not found.", "日志文件未找到。")
-		return
+		log.Fatal().Msg(err.Error())
 	}
 	defer file.Close()
-
-	writeResponse(w, r, 200, "Log cleared successfully.", "日志清除成功。")
 }

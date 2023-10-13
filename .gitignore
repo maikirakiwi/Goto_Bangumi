@@ -219,3 +219,4 @@ dev-dist
 test.*
 test_*
 go_backend/data/data.db
+go_backend/log.txt

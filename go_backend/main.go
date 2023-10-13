@@ -61,21 +61,24 @@ func main() {
 	}
 
 	log.Info().Msg("GotoBangumi has gracefully shutdown.")
+	api.ClearLog()
 }
 
 func Init() {
 	start := time.Now()
 
+	// Set logging pref
+	zerolog.TimeFieldFormat = time.DateTime
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+
 	// Database Setup
 	db.Init()
 	defer db.Teardown()
+
 	log.Info().Msg("Database Initialized.")
 
 	// Qbittorrent Setup
 	//downloaders.Init()
-
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	cfg, exists := db.Cache.Get("config")
 
 	// Default port
