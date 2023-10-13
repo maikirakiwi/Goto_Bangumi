@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/flosch/pongo2/v6"
@@ -42,20 +43,14 @@ func Router() http.Handler {
 	if len(os.Args) > 1 && os.Args[1] == "dev" {
 		r.Use(hlog.NewHandler(log.Logger))
 		r.Use(hlog.AccessHandler(func(r *http.Request, status, size int, duration time.Duration) {
-			hlog.FromRequest(r).Info().
-				Str("Method", r.Method).
-				Stringer("URI", r.URL).
-				Int("Status", status).
-				Dur("Duration (ms)", duration).
-				Msg("")
+			hlog.FromRequest(r).Info().Msgf("%s -> %d %s %s", strings.Replace(r.RemoteAddr, "127.0.0.1", "", 1), status, r.Method, r.URL)
 		}))
-		r.Use(hlog.RemoteAddrHandler("ip"))
 	}
 
 	// Secured routes
 	r.Group(func(r chi.Router) {
 		// jwt middlewares, disabled in dev mode
-		if len(os.Args) > 1 && os.Args[1] != "dev" {
+		if len(os.Args) < 2 {
 			r.Use(jwtVerifier(jwtInstance))
 			r.Use(verifyAccessToken)
 		}
