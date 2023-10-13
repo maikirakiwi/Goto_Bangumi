@@ -2,54 +2,44 @@ package database
 
 import (
 	"os"
-	"time"
 
 	"github.com/objectbox/objectbox-go/objectbox"
 	"github.com/rs/zerolog/log"
 	json "github.com/sugawarayuuta/sonnet"
 	"golang.org/x/crypto/bcrypt"
 
-	"Auto_Bangumi/v2/models"
+	"Auto_Bangumi/v2/models/store"
 )
 
-// Global db conn
+var Conn *objectbox.ObjectBox
 
-var Conn *clover.DB
-var Cache *cache.Cache
+func initObjectBox() {
+	var err error
+	Conn, err = objectbox.NewBuilder().Model(store.ObjectBoxModel()).Build()
+	if err != nil {
+		log.Fatal().Msgf("Error while initializing store: %s", err.Error())
+	}
+}
 
 func firstRun() {
-	err := os.Mkdir("./data", 0755)
-	if err != nil {
-		log.Fatal().Msgf("Error creating data directory: %s", err.Error())
-	}
-
-	db, err := clover.Open("./data")
-	if err != nil {
-		log.Fatal().Msg(err.Error())
-	}
+	initObjectBox()
 
 	// Default user is admin/adminadmin
-	db.CreateCollection("users")
-
-	commit := document.NewDocument()
-	commit.Set("username", "admin")
 	password, _ := bcrypt.GenerateFromPassword([]byte("adminadmin"), bcrypt.DefaultCost)
-	commit.Set("password", password)
-	db.InsertOne("users", commit)
-
-	// Default collections
-	db.CreateCollection("config")
-	db.CreateCollection("sessions")
-	db.CreateCollection("bangumi")
-	db.CreateCollection("torrents")
-	db.CreateCollection("rss")
+	_, err := store.BoxForUser(Conn).Put(&store.User{
+		Id:       1,
+		Username: "admin",
+		Password: password,
+	})
+	if err != nil {
+		log.Fatal().Msgf("Error while creating default user: %s", err.Error())
+	}
 
 	// Default settings
-	cfg := document.NewDocumentOf(models.InitConfigModel())
-	db.InsertOne("config", cfg)
-
-	db.Close()
-
+	_, err = store.BoxForConfigModel(Conn).Put(store.InitConfigModel())
+	if err != nil {
+		log.Fatal().Msgf("Error while setting default config: %s", err.Error())
+	}
 }
 
 func testContent() {
@@ -244,26 +234,22 @@ func testContent() {
 			"deleted": false
 		}
 	]`
-	bangumitest := make([]models.Bangumi, 9)
+	bangumitest := make([]store.Bangumi, 9)
 	json.Unmarshal([]byte(test), &bangumitest)
-	db, err := clover.Open("./data")
-	if err != nil {
-		log.Fatal().Msg(err.Error())
-	}
-	defer db.Close()
-	if err != nil {
-		log.Fatal().Msg(err.Error())
-	}
-	for i := 0; i < 8; i++ {
-		commit := document.NewDocumentOf(bangumitest[i])
-		db.InsertOne("bangumi", commit)
-	}
+	store.BoxForBangumi(Conn).ObjectBox.RunInWriteTx(func() error {
+		for i := 0; i < 8; i++ {
+			store.BoxForBangumi(Conn).Put(&bangumitest[i])
+		}
+		return nil
+	})
 }
 
 func Init() {
-	if len(os.Args) > 1 && os.Args[1] == "dev" {
+	if _, err := os.Stat("./objectBox"); err != nil {
+		firstRun()
+	} else if len(os.Args) > 1 && os.Args[1] == "dev" {
 		log.Info().Msg("Development mode detected. Skipping JWT auth; Removing data directory; Adding sample data.")
-		err := os.RemoveAll("./data")
+		err := os.RemoveAll("./objectBox")
 
 		if err != nil {
 			log.Fatal().Msgf("Error removing data directory: %s", err.Error())
@@ -271,51 +257,11 @@ func Init() {
 
 		firstRun()
 		testContent()
-	} else if _, err := os.Stat("./data"); err != nil {
-		firstRun()
+	} else {
+		initObjectBox()
 	}
-
-	var err error
-	Conn, err = clover.Open("./data")
-	if err != nil {
-		log.Fatal().Msgf("Error opening database: %s", err.Error())
-	}
-
-	// Have to be ran every time
-	Cache = cache.New(7*24*time.Hour, 10*time.Minute)
-	Cache.SetDefault("activeUser", "")
-
-	cfg, err := Conn.FindFirst(query.NewQuery("config").Where(query.Field("_id").Exists()))
-	if err != nil {
-		log.Fatal().Msgf("Error getting config [Init]: %s", err.Error())
-	}
-	Cache.SetDefault("config", new(models.ConfigModel).FromDocument(cfg))
 }
 
 func Teardown() {
 	Conn.Close()
-	Cache.Flush()
-}
-
-func FindOne(collection string, key string, value interface{}) (*document.Document, error) {
-	doc, err := Conn.FindFirst(query.NewQuery(collection).Where(query.Field(key).Eq(value)))
-	if err != nil {
-		return nil, err
-	} else {
-		return doc, nil
-	}
-}
-
-func UpdateOne(collection string, key string, value interface{}, changingKey string, changingValue interface{}) error {
-	return Conn.Update(query.NewQuery(collection).Where(query.Field(key).Eq(value)), map[string]interface{}{changingKey: changingValue})
-}
-
-func InsertOne(collection string, field string, value interface{}, ttl time.Duration) (string, error) {
-	doc := document.NewDocument()
-	doc.Set(field, value)
-	// ttl = -1 means no ttl
-	if ttl != -1 {
-		doc.SetExpiresAt(time.Now().Add(ttl))
-	}
-	return Conn.InsertOne(collection, doc)
 }

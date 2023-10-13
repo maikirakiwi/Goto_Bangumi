@@ -14,7 +14,7 @@ import (
 
 	"Auto_Bangumi/v2/api"
 	db "Auto_Bangumi/v2/database"
-	"Auto_Bangumi/v2/models"
+	"Auto_Bangumi/v2/models/store"
 )
 
 func host_ip() string {
@@ -70,17 +70,11 @@ func Init() {
 	//downloaders.Init()
 
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	cfg, exists := db.Cache.Get("config")
-
-	// Default port
-	port := "7892"
-	if exists {
-		port = fmt.Sprintf("%d", cfg.(models.ConfigModel).Program.WebuiPort)
-	}
+	cfg, _ := store.BoxForConfigModel(db.Conn).Get(1)
 
 	// Register server parameters
 	server = &http.Server{
-		Addr:    host_ip() + ":" + port,
+		Addr:    host_ip() + ":" + fmt.Sprintf("%d", cfg.Program.WebuiPort),
 		Handler: api.Router(),
 	}
 

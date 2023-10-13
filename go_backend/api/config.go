@@ -3,28 +3,29 @@ package api
 import (
 	"net/http"
 
-	"github.com/fatih/structs"
-	"github.com/ostafen/clover/v2/query"
 	"github.com/rs/zerolog/log"
 	json "github.com/sugawarayuuta/sonnet"
 
 	db "Auto_Bangumi/v2/database"
-	"Auto_Bangumi/v2/models"
+	"Auto_Bangumi/v2/models/store"
 )
 
 func GetConfigHandler(w http.ResponseWriter, r *http.Request) {
-	config, exists := db.Cache.Get("config")
-	if !exists {
+	config, err := store.BoxForConfigModel(db.Conn).Get(1)
+	if err != nil {
 		log.Fatal().Msg("Error getting config.")
+		writeResponse(w, r, 406, "Get config failed.", "获取配置失败。")
+		return
 	}
 
-	resp, _ := json.Marshal(config.(models.ConfigModel))
+	resp, _ := json.Marshal(config)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(resp)
 }
 
 func UpdateConfigHandler(w http.ResponseWriter, r *http.Request) {
-	var config models.ConfigModel
+	config := new(store.ConfigModel)
+	config.Id = 1
 	err := json.NewDecoder(r.Body).Decode(&config)
 	if err != nil {
 		log.Fatal().Msgf("Error decoding config: %s", err.Error())
@@ -32,14 +33,12 @@ func UpdateConfigHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = db.Conn.Update(query.NewQuery("config").Where(query.Field("_id").Exists()), structs.Map(config))
+	err = store.BoxForConfigModel(db.Conn).Update(config)
 	if err != nil {
-		log.Fatal().Msgf("Error updating config [Clover]: %s", err.Error())
+		log.Fatal().Msgf("Error updating config [objectBox]: %s", err.Error())
 		writeResponse(w, r, 406, "Update config failed.", "更新配置失败。")
 		return
 	}
-
-	db.Cache.Set("config", config, -1)
 
 	writeResponse(w, r, 200, "Update config successfully.", "更新配置成功。")
 

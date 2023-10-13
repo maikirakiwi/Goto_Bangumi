@@ -1,0 +1,336 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:8964443335941037847",
+      "lastPropertyId": "19:7629187720379671983",
+      "name": "Bangumi",
+      "properties": [
+        {
+          "id": "1:640588198541078848",
+          "name": "ID",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7690374373569276896",
+          "name": "OfficialTitle",
+          "type": 9
+        },
+        {
+          "id": "3:4510785125327115441",
+          "name": "Year",
+          "type": 9
+        },
+        {
+          "id": "4:4755103379333328942",
+          "name": "TitleRaw",
+          "type": 9
+        },
+        {
+          "id": "5:3888655672308989603",
+          "name": "Season",
+          "type": 6
+        },
+        {
+          "id": "6:8032780442251683928",
+          "name": "SeasonRaw",
+          "type": 9
+        },
+        {
+          "id": "7:4775406391587270245",
+          "name": "GroupName",
+          "type": 9
+        },
+        {
+          "id": "8:1390309613619613843",
+          "name": "Dpi",
+          "type": 9
+        },
+        {
+          "id": "9:6244394522945036996",
+          "name": "Source",
+          "type": 9
+        },
+        {
+          "id": "10:8365743707834416340",
+          "name": "Subtitle",
+          "type": 9
+        },
+        {
+          "id": "11:4816283955666611730",
+          "name": "EpsCollect",
+          "type": 1
+        },
+        {
+          "id": "12:4441884131206989421",
+          "name": "Offset",
+          "type": 6
+        },
+        {
+          "id": "13:2418678768753924602",
+          "name": "Filter",
+          "type": 9
+        },
+        {
+          "id": "14:1839172698534096752",
+          "name": "RssLink",
+          "type": 9
+        },
+        {
+          "id": "15:7183610708489751357",
+          "name": "PosterLink",
+          "type": 9
+        },
+        {
+          "id": "16:1704624039540361431",
+          "name": "Added",
+          "type": 1
+        },
+        {
+          "id": "17:5004082932493234600",
+          "name": "RuleName",
+          "type": 9
+        },
+        {
+          "id": "18:2448422084709197190",
+          "name": "SavePath",
+          "type": 9
+        },
+        {
+          "id": "19:7629187720379671983",
+          "name": "Deleted",
+          "type": 1
+        }
+      ]
+    },
+    {
+      "id": "2:3661136741022149026",
+      "lastPropertyId": "34:5845722247005825891",
+      "name": "ConfigModel",
+      "properties": [
+        {
+          "id": "1:8125849693716546212",
+          "name": "Id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5662346678435714481",
+          "name": "Program_RssTime",
+          "type": 6
+        },
+        {
+          "id": "3:2463631715779816002",
+          "name": "Program_RenameTime",
+          "type": 6
+        },
+        {
+          "id": "4:3309648394766472774",
+          "name": "Program_WebuiPort",
+          "type": 6
+        },
+        {
+          "id": "5:4807877462437965747",
+          "name": "Program_DataVersion",
+          "type": 6
+        },
+        {
+          "id": "6:8054484895774020424",
+          "name": "Downloader_Type",
+          "type": 9
+        },
+        {
+          "id": "7:3684837363773412374",
+          "name": "Downloader_Host",
+          "type": 9
+        },
+        {
+          "id": "8:2366179354900616047",
+          "name": "Downloader_Username",
+          "type": 9
+        },
+        {
+          "id": "9:942151848596891033",
+          "name": "Downloader_Password",
+          "type": 9
+        },
+        {
+          "id": "10:4402424937054323597",
+          "name": "Downloader_Path",
+          "type": 9
+        },
+        {
+          "id": "11:2249068158182603511",
+          "name": "Downloader_Ssl",
+          "type": 1
+        },
+        {
+          "id": "12:3643497309359179891",
+          "name": "RssParser_Enable",
+          "type": 1
+        },
+        {
+          "id": "13:5490835588360756870",
+          "name": "RssParser_Type",
+          "type": 9
+        },
+        {
+          "id": "14:5295983031754260650",
+          "name": "RssParser_CustomUrl",
+          "type": 9
+        },
+        {
+          "id": "15:6710387785047590517",
+          "name": "RssParser_Token",
+          "type": 9
+        },
+        {
+          "id": "16:3883644065902550674",
+          "name": "RssParser_EnableTmdb",
+          "type": 1
+        },
+        {
+          "id": "17:3724823413314131943",
+          "name": "RssParser_Filter",
+          "type": 30
+        },
+        {
+          "id": "18:4676840664400275141",
+          "name": "RssParser_Language",
+          "type": 9
+        },
+        {
+          "id": "19:5030285474841923529",
+          "name": "BangumiManage_Enable",
+          "type": 1
+        },
+        {
+          "id": "20:7906350696996127280",
+          "name": "BangumiManage_EpsComplete",
+          "type": 1
+        },
+        {
+          "id": "21:1567729220321130672",
+          "name": "BangumiManage_RenameMethod",
+          "type": 9
+        },
+        {
+          "id": "22:452355497554159323",
+          "name": "BangumiManage_GroupTag",
+          "type": 1
+        },
+        {
+          "id": "23:8975017158628021801",
+          "name": "BangumiManage_RemoveBadTorrent",
+          "type": 1
+        },
+        {
+          "id": "24:8898045258262416229",
+          "name": "Log_DebugEnable",
+          "type": 1
+        },
+        {
+          "id": "25:6690381397932035809",
+          "name": "Proxy_Enable",
+          "type": 1
+        },
+        {
+          "id": "26:135807620441161786",
+          "name": "Proxy_Type",
+          "type": 9
+        },
+        {
+          "id": "27:5142955061390823344",
+          "name": "Proxy_Host",
+          "type": 9
+        },
+        {
+          "id": "28:6292683889318957038",
+          "name": "Proxy_Port",
+          "type": 6
+        },
+        {
+          "id": "29:2077519250318415404",
+          "name": "Proxy_Username",
+          "type": 9
+        },
+        {
+          "id": "30:6452389843982846459",
+          "name": "Proxy_Password",
+          "type": 9
+        },
+        {
+          "id": "31:6177924589514239839",
+          "name": "Notification_Enable",
+          "type": 1
+        },
+        {
+          "id": "32:3775839149205514293",
+          "name": "Notification_Type",
+          "type": 9
+        },
+        {
+          "id": "33:3814450750971086140",
+          "name": "Notification_Token",
+          "type": 9
+        },
+        {
+          "id": "34:5845722247005825891",
+          "name": "Notification_ChatId",
+          "type": 9
+        }
+      ]
+    },
+    {
+      "id": "3:537516317625272234",
+      "lastPropertyId": "1:2477299678240676857",
+      "name": "Cache",
+      "properties": [
+        {
+          "id": "1:2477299678240676857",
+          "name": "Id",
+          "type": 6,
+          "flags": 1
+        }
+      ]
+    },
+    {
+      "id": "4:5924075746120306429",
+      "lastPropertyId": "3:5583198832391540710",
+      "name": "User",
+      "properties": [
+        {
+          "id": "1:4249876444728144710",
+          "name": "Id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8194895899955558159",
+          "name": "Username",
+          "indexId": "1:3015471243652167874",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:5583198832391540710",
+          "name": "Password",
+          "type": 23
+        }
+      ]
+    }
+  ],
+  "lastEntityId": "4:5924075746120306429",
+  "lastIndexId": "1:3015471243652167874",
+  "lastRelationId": "",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}

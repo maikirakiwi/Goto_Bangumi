@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"crypto/rand"
 	"math/big"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	db "Auto_Bangumi/v2/database"
+	"Auto_Bangumi/v2/models/store"
 )
 
 var jwtKey = generateKey()
@@ -42,13 +44,13 @@ func verifyAccessToken(next http.Handler) http.Handler {
 		}
 
 		// Check if the user is in session
-		activeUser, exists := db.Cache.Get("activeUser")
-		if !exists {
+		activeUser, err := store.BoxForUser(db.Conn).Get(1)
+		if err != nil {
 			writeException(w, r, 500, "Internal Server Error")
 			return
 		}
 
-		if username, exists := token.Get("sub"); !exists || username == "" || activeUser.(string) != username.(string) {
+		if username, exists := token.Get("sub"); !exists || username == "" || activeUser.Username != username.(string) {
 			writeException(w, r, 401, "Unauthorized")
 			return
 		}
@@ -73,12 +75,12 @@ func setTokenCookie(w http.ResponseWriter, r *http.Request, token string) {
 }
 
 func refreshTokenHandler(w http.ResponseWriter, r *http.Request) {
-	activeUser, exists := db.Cache.Get("activeUser")
-	if !exists {
+	activeUser, err := store.BoxForUser(db.Conn).Get(1)
+	if err != nil {
 		writeException(w, r, 500, "Internal Server Error")
 		return
 	}
-	_, token, _ := createAccessToken(activeUser.(string))
+	_, token, _ := createAccessToken(activeUser.Username)
 	setTokenCookie(w, r, token)
 
 	writeJWTResponse(w, r, token, "Bearer", "")
@@ -96,7 +98,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	jwt, _, err := jwtauth.FromContext(r.Context())
 	if err != nil {
 		if username, exists := jwt.Get("sub"); exists {
-			if activeUser, exists := db.Cache.Get("activeUser"); exists && activeUser == username.(string) {
+			if dbUsers, err := store.BoxForUser(db.Conn).Query(store.User_.Username.Equals(username.(string), true)).Limit(1).Find(); err != nil || len(dbUsers) == 0 {
 				writeResponse(w, r, 200, "Logged in successfully", "登陆成功")
 				return
 			}
@@ -119,14 +121,14 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	admin, err := db.FindOne("users", "username", username)
+	admin, err := store.BoxForUser(db.Conn).Query(store.User_.Username.Equals(username, true)).Limit(1).Find()
 	if err != nil {
 		randomSleep()
 		writeResponse(w, r, 401, "User not found", "用户不存在")
 		return
 	}
 
-	res := bcrypt.CompareHashAndPassword(admin.Get("password").([]byte), []byte(password))
+	res := bcrypt.CompareHashAndPassword(admin[0].Password, []byte(password))
 	if res != nil {
 		randomSleep()
 		writeResponse(w, r, 401, "User not found", "用户不存在")
@@ -134,7 +136,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Store login session for reuse
-	db.Cache.SetDefault("activeUser", username)
 	refreshTokenHandler(w, r)
 }
 
@@ -146,8 +147,6 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	cookie.Path = "/"
 	cookie.HttpOnly = true
 	http.SetCookie(w, &cookie)
-
-	db.Cache.Delete("activeUser")
 
 	//writeResponse(w, r, 200, "Logged out successfully", "登出成功")
 
@@ -163,21 +162,23 @@ func updateUserHandler(w http.ResponseWriter, r *http.Request) {
 		writeException(w, r, 500, "Internal Server Error")
 		return
 	}
-	old_user, exists := db.Cache.Get("activeUser")
-	if !exists {
+	user, err := store.BoxForUser(db.Conn).Get(1)
+	if err != nil {
 		writeException(w, r, 500, "Internal Server Error")
 		return
 	}
-	if activeUser, exists := db.Cache.Get("activeUser"); exists && activeUser != form["username"].(string) {
-		db.Cache.SetDefault("activeUser", form["username"].(string))
+	if user.Username != form["username"].(string) {
+		user.Username = form["username"].(string)
+		store.BoxForUser(db.Conn).Update(user)
 	}
 
 	password, _ := bcrypt.GenerateFromPassword([]byte(form["password"].(string)), bcrypt.DefaultCost)
-	db.UpdateOne("users", "username", old_user.(string), "password", password)
-	db.UpdateOne("users", "username", old_user.(string), "username", form["username"].(string))
+	if !bytes.Equal(password, user.Password) {
+		user.Password = password
+		store.BoxForUser(db.Conn).Update(user)
+	}
 
-	new_user, _ := db.Cache.Get("activeUser")
-	_, token, _ := createAccessToken(new_user.(string))
+	_, token, _ := createAccessToken(form["username"].(string))
 	setTokenCookie(w, r, token)
 	writeJWTResponse(w, r, token, "Bearer", "update success")
 }

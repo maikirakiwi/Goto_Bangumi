@@ -5,32 +5,24 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/fatih/structs"
 	"github.com/go-chi/chi/v5"
-	"github.com/ostafen/clover/v2/query"
 	"github.com/rs/zerolog/log"
 	json "github.com/sugawarayuuta/sonnet"
 
 	db "Auto_Bangumi/v2/database"
 	dl "Auto_Bangumi/v2/downloaders"
-	"Auto_Bangumi/v2/models"
+	"Auto_Bangumi/v2/models/store"
 )
 
 func getAllBangumiHandler(w http.ResponseWriter, r *http.Request) {
-	res, err := db.Conn.FindAll(query.NewQuery("bangumi"))
+	res, err := store.BoxForBangumi(db.Conn).GetAll()
 	if err != nil {
 		log.Error().Msgf("Error on /api/v1/bangumi/get/all: %s", err)
 		writeException(w, r, 500, "Internal Server Error")
 		return
 	}
 
-	// Encode list of documents to JSON using Bangumi struct
-	bangumi := []models.Bangumi{}
-	for _, doc := range res {
-		bangumi = append(bangumi, new(models.Bangumi).FromDocument(doc))
-	}
-
-	json, err := json.Marshal(bangumi)
+	json, err := json.Marshal(res)
 	if err != nil {
 		log.Error().Msgf("Error on /api/v1/bangumi/get/all: %s", err)
 		writeException(w, r, 500, "Internal Server Error")
@@ -49,14 +41,14 @@ func getBangumiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := db.FindOne("bangumi", "ID", id)
+	res, err := store.BoxForBangumi(db.Conn).Get(uint64(id))
 	if err != nil || res == nil {
 		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %s", err)
 		writeResponse(w, r, 406, fmt.Sprintf("Can't find data with %d", id), fmt.Sprintf("无法找到 id %d 的数据", id))
 		return
 	}
 
-	json, err := json.Marshal(new(models.Bangumi).FromDocument(res))
+	json, err := json.Marshal(res)
 	if err != nil {
 		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %s", err)
 		writeException(w, r, 500, "Internal Server Error")
@@ -75,33 +67,31 @@ func fetchBangumiID(r *http.Request) (int, error) {
 func updateBangumiHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := fetchBangumiID(r)
 	if err != nil {
-		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %d", err)
+		log.Error().Msgf("Error on /api/v1/bangumi/update/{bangumi_id}: %d", err)
 		writeResponse(w, r, 406, fmt.Sprintf("Can't find data with %d", id), fmt.Sprintf("无法找到 id %d 的数据", id))
 		return
 	}
 
 	// Parse JSON from req body
-	newDataStruct := models.BangumiUpdate{}
-	err = json.NewDecoder(r.Body).Decode(&newDataStruct)
+	newData := new(store.Bangumi)
+	newData.ID = uint64(id)
+	err = json.NewDecoder(r.Body).Decode(&newData)
 	if err != nil {
-		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %d", err)
+		log.Error().Msgf("Error on /api/v1/bangumi/update/{bangumi_id}: %d", err)
 		writeResponse(w, r, 406, fmt.Sprintf("Can't find data with %d", id), fmt.Sprintf("无法找到 id %d 的数据", id))
 		return
 	}
 
 	// Fetch existing Bangumi from database
-	oldData, err := db.FindOne("bangumi", "ID", id)
+	oldData, err := store.BoxForBangumi(db.Conn).Get(uint64(id))
 	if err != nil {
-		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %d", err)
+		log.Error().Msgf("Error on /api/v1/bangumi/update/{bangumi_id}: %d", err)
 		writeResponse(w, r, 406, fmt.Sprintf("Can't find data with %d", id), fmt.Sprintf("无法找到 id %d 的数据", id))
 		return
 	}
 
-	// Parse old data to struct
-	oldDataStruct := new(models.Bangumi).FromDocument(oldData)
-
 	// Generate new path
-	newPath := fmtSavePath(newDataStruct)
+	newPath := fmtSavePath(oldData)
 	if newPath == "" {
 		log.Error().Msgf("Error on /api/v1/bangumi/update/{bangumi_id}: %s", err)
 		writeException(w, r, 500, "Internal Server Error")
@@ -109,7 +99,7 @@ func updateBangumiHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if path changed
-	if oldDataStruct.SavePath != newPath {
+	if oldData.SavePath != newPath {
 		// Match torrents list
 		list := dl.GetAllTorrent()
 		if list == nil {
@@ -120,7 +110,7 @@ func updateBangumiHandler(w http.ResponseWriter, r *http.Request) {
 
 		changeQueue := []string{}
 		for _, torrent := range list {
-			if torrent.SavePath == oldDataStruct.SavePath {
+			if torrent.SavePath == oldData.SavePath {
 				changeQueue = append(changeQueue, torrent.Hash)
 			}
 		}
@@ -137,13 +127,18 @@ func updateBangumiHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// DB Transaction
-	newDataStruct.SavePath = newPath
-	db.Conn.Update(query.NewQuery("bangumi").Where(query.Field("ID").Eq(id)), structs.Map(newDataStruct))
+	newData.SavePath = newPath
+	err = store.BoxForBangumi(db.Conn).Update(newData)
+	if err != nil {
+		log.Error().Msgf("Error on /api/v1/bangumi/update/{bangumi_id}: %s", err)
+		writeException(w, r, 500, "Internal Server Error")
+		return
+	}
 
 	writeResponse(w, r, 200, "Update bangumi successfully.", "更新番剧成功。")
 }
 
-func fmtSavePath(b models.BangumiUpdate) string {
+func fmtSavePath(b *store.Bangumi) string {
 	var folder string
 	if b.Year != "" {
 		folder = fmt.Sprintf("%s (%s)", b.OfficialTitle, b.Year)
@@ -151,11 +146,11 @@ func fmtSavePath(b models.BangumiUpdate) string {
 		folder = b.OfficialTitle
 	}
 
-	cfg, exists := db.Cache.Get("config")
-	if !exists {
-		log.Fatal().Msg("Config not in cache while formatting save path.")
+	cfg, err := store.BoxForConfigModel(db.Conn).Get(1)
+	if err != nil {
+		log.Fatal().Msg("Config DNE while formatting save path.")
 		return ""
 	}
 
-	return fmt.Sprintf("%s/%s/Season %d", cfg.(models.ConfigModel).Downloader.Path, folder, b.Season)
+	return fmt.Sprintf("%s/%s/Season %d", cfg.Downloader.Path, folder, b.Season)
 }
