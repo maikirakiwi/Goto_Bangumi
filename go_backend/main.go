@@ -35,8 +35,13 @@ var server *http.Server
 
 // Graceful shutdown handler
 func main() {
-	// Pretty print by default because we don't care about 1ms of performance each log.
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	logFile, _ := os.OpenFile(
+		"log.txt",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0664,
+	)
+	multi := zerolog.MultiLevelWriter(os.Stderr, logFile)
+	log.Logger = zerolog.New(multi).With().Timestamp().Logger()
 
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, syscall.SIGINT, syscall.SIGTERM)
@@ -69,6 +74,7 @@ func Init() {
 	// Qbittorrent Setup
 	//downloaders.Init()
 
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	cfg, exists := db.Cache.Get("config")
 
@@ -84,7 +90,10 @@ func Init() {
 		Handler: api.Router(),
 	}
 
-	log.Info().Msgf("GotoBangumi initialized in %s. Listening on %s.", time.Since(start).String(), server.Addr)
+	log.Info().Msgf("GotoBangumi initialized in %s. Listening on %s. ", time.Since(start).String(), server.Addr)
+	log.Info().Msgf("Authors: EstrellaXD Twitter: https://twitter.com/Estrella_Pan")
+	log.Info().Msgf("Authors: Rewrite0 GitHub: https://github.com/Rewrite0")
+	log.Info().Msgf("Authors: Maikiwi Twitter: https://twitter.com/notmaikiwi")
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal().Msgf("Error while starting GotoBangumi: %s", err.Error())
 	}

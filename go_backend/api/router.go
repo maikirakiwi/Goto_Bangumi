@@ -91,6 +91,8 @@ func Router() http.Handler {
 
 		// ./program.go
 		r.Get("/api/v1/status", ProgramStatusHandler)
+		r.Get("/api/v1/log", LogOutputHandler)
+		r.Get("/api/v1/log/clear", LogClearHandler)
 
 	})
 
