@@ -75,7 +75,7 @@ func Init() {
 	db.Init()
 	defer db.Teardown()
 
-	log.Info().Msg("Database Initialized.")
+	log.Info().Msg("[1/1] Database Initialized.")
 
 	// Qbittorrent Setup
 	//downloaders.Init()
@@ -94,6 +94,7 @@ func Init() {
 	}
 
 	log.Info().Msgf("GotoBangumi initialized in %s. Listening on %s. ", time.Since(start).String(), server.Addr)
+	log.Info().Msgf("GitHub: github.com/maikirakiwi/Goto_Bangumi")
 	log.Info().Msgf("Authors: EstrellaXD Twitter: @Estrella_Pan")
 	log.Info().Msgf("Authors: Rewrite0 GitHub: @Rewrite0")
 	log.Info().Msgf("Authors: Maikiwi Twitter: @notmaikiwi")
