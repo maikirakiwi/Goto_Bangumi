@@ -218,5 +218,5 @@ dev-dist
 # test file
 test.*
 test_*
-go_backend/data/data.db
+go_backend/data/*
 go_backend/log.txt

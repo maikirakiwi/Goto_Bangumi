@@ -95,9 +95,9 @@ func Init() {
 
 	log.Info().Msgf("GotoBangumi initialized in %s. Listening on %s. ", time.Since(start).String(), server.Addr)
 	log.Info().Msgf("GitHub: github.com/maikirakiwi/Goto_Bangumi")
-	log.Info().Msgf("Authors: EstrellaXD Twitter: @Estrella_Pan")
-	log.Info().Msgf("Authors: Rewrite0 GitHub: @Rewrite0")
-	log.Info().Msgf("Authors: Maikiwi Twitter: @notmaikiwi")
+	log.Info().Msgf("Authors: EstrellaXD | Twitter: @Estrella_Pan")
+	log.Info().Msgf("Authors: Rewrite0   | GitHub: @Rewrite0")
+	log.Info().Msgf("Authors: Maikiwi    | Twitter: @notmaikiwi")
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal().Msgf("Error while starting GotoBangumi: %s", err.Error())
 	}
