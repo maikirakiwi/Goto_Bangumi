@@ -4,20 +4,19 @@ import (
 	"os"
 	"time"
 
-	"github.com/ostafen/clover/v2"
-	"github.com/ostafen/clover/v2/document"
-	"github.com/ostafen/clover/v2/query"
+	"github.com/glebarez/sqlite"
 	"github.com/patrickmn/go-cache"
 	"github.com/rs/zerolog/log"
 	json "github.com/sugawarayuuta/sonnet"
+	gorm_zerolog "github.com/wei840222/gorm-zerolog"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 
 	"Auto_Bangumi/v2/models"
 )
 
 // Global db conn
-
-var Conn *clover.DB
+var Conn *gorm.DB
 var Cache *cache.Cache
 
 func firstRun() {
@@ -26,32 +25,35 @@ func firstRun() {
 		log.Fatal().Msgf("Error creating data directory: %s", err.Error())
 	}
 
-	db, err := clover.Open("./data")
+	db, err := gorm.Open(sqlite.Open(
+		"file:data/data.db?&_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)&_pragma=synchronous(1)"), &gorm.Config{
+		Logger:      gorm_zerolog.NewWithLogger(log.Logger),
+		PrepareStmt: true,
+	})
+	db.AutoMigrate(&models.Bangumi{})
+	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Config{})
+
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
 
 	// Default user is admin/adminadmin
-	db.CreateCollection("users")
 
-	commit := document.NewDocument()
-	commit.Set("username", "admin")
 	password, _ := bcrypt.GenerateFromPassword([]byte("adminadmin"), bcrypt.DefaultCost)
-	commit.Set("password", password)
-	db.InsertOne("users", commit)
-
-	// Default collections
-	db.CreateCollection("config")
-	db.CreateCollection("sessions")
-	db.CreateCollection("bangumi")
-	db.CreateCollection("torrents")
-	db.CreateCollection("rss")
+	err = db.Create(&models.User{
+		Username: "admin",
+		Password: password,
+	}).Error
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
 
 	// Default settings
-	cfg := document.NewDocumentOf(models.InitConfigModel())
-	db.InsertOne("config", cfg)
-
-	db.Close()
+	err = db.Model(&models.Config{}).Save(models.InitConfigModel()).Error
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
 
 }
 
@@ -249,25 +251,21 @@ func testContent() {
 	]`
 	bangumitest := make([]models.Bangumi, 9)
 	json.Unmarshal([]byte(test), &bangumitest)
-	db, err := clover.Open("./data")
+	db, err := gorm.Open(sqlite.Open("./data/data.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
-	defer db.Close()
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
-	for i := 0; i < 9; i++ {
-		commit := document.NewDocumentOf(bangumitest[i])
-		db.InsertOne("bangumi", commit)
-	}
+	db.Create(&bangumitest)
 }
 
 func Init() {
 	if len(os.Args) > 1 && os.Args[1] == "dev" {
 		log.Info().Msg("Development mode detected. Skipping JWT auth; Removing data directory; Adding sample data.")
-		err := os.RemoveAll("./data")
 
+		err := os.RemoveAll("./data")
 		if err != nil {
 			log.Fatal().Msgf("Error removing data directory: %s", err.Error())
 		}
@@ -279,46 +277,32 @@ func Init() {
 	}
 
 	var err error
-	Conn, err = clover.Open("./data")
+	// Open database connection
+	db, err := gorm.Open(sqlite.Open(
+		"file:data/data.db?&_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)&_pragma=synchronous(1)"), &gorm.Config{
+		Logger:      gorm_zerolog.NewWithLogger(log.Logger),
+		PrepareStmt: true,
+	})
 	if err != nil {
-		log.Fatal().Msgf("Error opening database: %s", err.Error())
+		log.Fatal().Msg(err.Error())
 	}
+
+	Conn = db
 
 	// Have to be ran every time
 	Cache = cache.New(7*24*time.Hour, 10*time.Minute)
 	Cache.SetDefault("activeUser", "")
 
-	cfg, err := Conn.FindFirst(query.NewQuery("config").Where(query.Field("_id").Exists()))
+	// Load config into cache
+	cfg := models.Config{}
+	db.Model(&models.Config{}).First(&cfg)
+
 	if err != nil {
 		log.Fatal().Msgf("Error getting config [Init]: %s", err.Error())
 	}
-	Cache.SetDefault("config", new(models.ConfigModel).FromDocument(cfg))
+	Cache.SetDefault("config", cfg)
 }
 
 func Teardown() {
-	Conn.Close()
 	Cache.Flush()
-}
-
-func FindOne(collection string, key string, value interface{}) (*document.Document, error) {
-	doc, err := Conn.FindFirst(query.NewQuery(collection).Where(query.Field(key).Eq(value)))
-	if err != nil {
-		return nil, err
-	}
-
-	return doc, nil
-}
-
-func UpdateOne(collection string, key string, value interface{}, changingKey string, changingValue interface{}) error {
-	return Conn.Update(query.NewQuery(collection).Where(query.Field(key).Eq(value)), map[string]interface{}{changingKey: changingValue})
-}
-
-func InsertOne(collection string, field string, value interface{}, ttl time.Duration) (string, error) {
-	doc := document.NewDocument()
-	doc.Set(field, value)
-	// ttl = -1 means no ttl
-	if ttl != -1 {
-		doc.SetExpiresAt(time.Now().Add(ttl))
-	}
-	return Conn.InsertOne(collection, doc)
 }

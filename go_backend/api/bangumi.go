@@ -5,9 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/fatih/structs"
 	"github.com/go-chi/chi/v5"
-	"github.com/ostafen/clover/v2/query"
 	"github.com/rs/zerolog/log"
 	json "github.com/sugawarayuuta/sonnet"
 
@@ -17,20 +15,16 @@ import (
 )
 
 func getAllBangumiHandler(w http.ResponseWriter, r *http.Request) {
-	res, err := db.Conn.FindAll(query.NewQuery("bangumi"))
+	bangumis := []models.Bangumi{}
+	err := db.Conn.Model(&models.Bangumi{}).Find(&bangumis).Error
 	if err != nil {
 		log.Error().Msgf("Error on /api/v1/bangumi/get/all: %s", err)
 		writeException(w, r, 500, "Internal Server Error")
 		return
 	}
 
-	// Encode list of documents to JSON using Bangumi struct
-	bangumi := []models.Bangumi{}
-	for _, doc := range res {
-		bangumi = append(bangumi, new(models.Bangumi).FromDocument(doc))
-	}
-
-	json, err := json.Marshal(bangumi)
+	// Marshal into json
+	res, err := json.Marshal(&bangumis)
 	if err != nil {
 		log.Error().Msgf("Error on /api/v1/bangumi/get/all: %s", err)
 		writeException(w, r, 500, "Internal Server Error")
@@ -38,7 +32,7 @@ func getAllBangumiHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Write(json)
+	w.Write(res)
 }
 
 func getBangumiHandler(w http.ResponseWriter, r *http.Request) {
@@ -49,14 +43,15 @@ func getBangumiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := db.FindOne("bangumi", "ID", id)
-	if err != nil || res == nil {
+	res := models.Bangumi{}
+	err = db.Conn.Model(&models.Bangumi{}).Where("ID = ?", id).First(&res).Error
+	if err != nil {
 		log.Error().Msgf("DB Error on /api/v1/bangumi/get/{bangumi_id}: %s", err)
 		writeResponse(w, r, 406, fmt.Sprintf("Can't find data with %d", id), fmt.Sprintf("无法找到 id %d 的数据", id))
 		return
 	}
 
-	json, err := json.Marshal(new(models.Bangumi).FromDocument(res))
+	json, err := json.Marshal(&res)
 	if err != nil {
 		log.Error().Msgf("Marshal Error on /api/v1/bangumi/get/{bangumi_id}: %s", err)
 		writeException(w, r, 500, "Internal Server Error")
@@ -81,7 +76,8 @@ func updateBangumiHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse JSON from req body
-	newDataStruct := models.BangumiUpdate{}
+	newDataStruct := models.Bangumi{}
+	newDataStruct.ID = id
 	err = json.NewDecoder(r.Body).Decode(&newDataStruct)
 	if err != nil {
 		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %d", err)
@@ -90,15 +86,13 @@ func updateBangumiHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch existing Bangumi from database
-	oldData, err := db.FindOne("bangumi", "ID", id)
+	oldDataStruct := models.Bangumi{}
+	err = db.Conn.Model(&models.Bangumi{}).Where("ID = ?", id).First(&oldDataStruct).Error
 	if err != nil {
 		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %d", err)
 		writeResponse(w, r, 406, fmt.Sprintf("Can't find data with %d", id), fmt.Sprintf("无法找到 id %d 的数据", id))
 		return
 	}
-
-	// Parse old data to struct
-	oldDataStruct := new(models.Bangumi).FromDocument(oldData)
 
 	// Generate new path
 	newPath := fmtSavePath(newDataStruct)
@@ -138,12 +132,12 @@ func updateBangumiHandler(w http.ResponseWriter, r *http.Request) {
 
 	// DB Transaction
 	newDataStruct.SavePath = newPath
-	db.Conn.Update(query.NewQuery("bangumi").Where(query.Field("ID").Eq(id)), structs.Map(newDataStruct))
+	db.Conn.Save(&newDataStruct)
 
 	writeResponse(w, r, 200, "Update bangumi successfully.", "更新番剧成功。")
 }
 
-func fmtSavePath(b models.BangumiUpdate) string {
+func fmtSavePath(b models.Bangumi) string {
 	var folder string
 	if b.Year != "" {
 		folder = fmt.Sprintf("%s (%s)", b.OfficialTitle, b.Year)
@@ -157,5 +151,5 @@ func fmtSavePath(b models.BangumiUpdate) string {
 		return ""
 	}
 
-	return fmt.Sprintf("%s/%s/Season %d", cfg.(models.ConfigModel).Downloader.Path, folder, b.Season)
+	return fmt.Sprintf("%s/%s/Season %d", cfg.(models.Config).Downloader.Path, folder, b.Season)
 }

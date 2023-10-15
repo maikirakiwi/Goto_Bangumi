@@ -18,15 +18,15 @@ func Init() {
 	}
 
 	var host string
-	if !cfg.(models.ConfigModel).Downloader.Ssl {
-		host = "http://" + cfg.(models.ConfigModel).Downloader.Host
+	if !cfg.(models.Config).Downloader.Ssl {
+		host = "http://" + cfg.(models.Config).Downloader.Host
 	} else {
-		host = "https://" + cfg.(models.ConfigModel).Downloader.Host
+		host = "https://" + cfg.(models.Config).Downloader.Host
 	}
 
 	cli, err := qbit.NewCli(host,
-		cfg.(models.ConfigModel).Downloader.Username,
-		cfg.(models.ConfigModel).Downloader.Password)
+		cfg.(models.Config).Downloader.Username,
+		cfg.(models.Config).Downloader.Password)
 	if err != nil {
 		log.Fatal().Msg("Error while initializing Qbittorrent Client: " + err.Error())
 	}

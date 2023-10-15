@@ -13,6 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	db "Auto_Bangumi/v2/database"
+	"Auto_Bangumi/v2/models"
 )
 
 var jwtKey = generateKey()
@@ -119,14 +120,15 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	admin, err := db.FindOne("users", "username", username)
-	if err != nil {
+	userdata := models.User{}
+	dbres := db.Conn.Where(&models.User{Username: username}).First(&userdata)
+	if dbres.Error != nil {
 		randomSleep()
 		writeResponse(w, r, 401, "User not found", "用户不存在")
 		return
 	}
 
-	res := bcrypt.CompareHashAndPassword(admin.Get("password").([]byte), []byte(password))
+	res := bcrypt.CompareHashAndPassword(userdata.Password, []byte(password))
 	if res != nil {
 		randomSleep()
 		writeResponse(w, r, 401, "User not found", "用户不存在")
@@ -163,19 +165,30 @@ func updateUserHandler(w http.ResponseWriter, r *http.Request) {
 		writeException(w, r, 500, "Internal Server Error")
 		return
 	}
-	old_user, exists := db.Cache.Get("activeUser")
-	if !exists {
-		writeException(w, r, 500, "Internal Server Error")
-		return
-	}
+	//old_user, exists := db.Cache.Get("activeUser")
+	//if !exists {
+	//writeException(w, r, 500, "Internal Server Error")
+	//return
+	//}
 	if activeUser, exists := db.Cache.Get("activeUser"); exists && activeUser != form["username"].(string) {
 		db.Cache.SetDefault("activeUser", form["username"].(string))
 	}
 
 	password, _ := bcrypt.GenerateFromPassword([]byte(form["password"].(string)), bcrypt.DefaultCost)
-	db.UpdateOne("users", "username", old_user.(string), "password", password)
-	db.UpdateOne("users", "username", old_user.(string), "username", form["username"].(string))
 
+	// DB transaction
+	user := models.User{}
+	db_res := db.Conn.First(&user)
+	if db_res.Error != nil {
+		log.Error().Msg(db_res.Error.Error())
+		writeException(w, r, 500, "Internal Server Error")
+		return
+	}
+	user.Username = form["username"].(string)
+	user.Password = password
+	db.Conn.Save(&user)
+
+	// Set cache and reissue jwt token
 	new_user, _ := db.Cache.Get("activeUser")
 	_, token, _ := createAccessToken(new_user.(string))
 	setTokenCookie(w, r, token)

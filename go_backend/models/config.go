@@ -1,174 +1,152 @@
 package models
 
-import "github.com/ostafen/clover/v2/document"
+import (
+	"database/sql/driver"
 
-type ConfigModel struct {
-	Program       ProgramConfig       `json:"program" clover:"Program"`
-	Downloader    DownloaderConfig    `json:"downloader" clover:"Downloader"`
-	RssParser     RssParserConfig     `json:"rss_parser" clover:"RssParser"`
-	BangumiManage BangumiManageConfig `json:"bangumi_manage" clover:"BangumiManage"`
-	Log           LogConfig           `json:"log" clover:"Log"`
-	Proxy         ProxyConfig         `json:"proxy" clover:"Proxy"`
-	Notification  NotificationConfig  `json:"notification" clover:"Notification"`
+	json "github.com/sugawarayuuta/sonnet"
+	"gorm.io/gorm"
+)
+
+type User struct {
+	gorm.Model
+	Username string `json:"username"`
+	Password []byte `json:"password"`
+}
+
+func (c *ConfigContent) Scan(src interface{}) error {
+	return json.Unmarshal([]byte(src.(string)), &c)
+}
+
+func (c ConfigContent) Value() (driver.Value, error) {
+	val, err := json.Marshal(c)
+	return string(val), err
+}
+
+type Config struct {
+	gorm.Model    `json:"-"`
+	ConfigContent `gorm:"embedded"`
+}
+
+type ConfigContent struct {
+	Program       ProgramConfig       `json:"program"`
+	Downloader    DownloaderConfig    `json:"downloader"`
+	RssParser     RssParserConfig     `json:"rss_parser"`
+	BangumiManage BangumiManageConfig `json:"bangumi_manage"`
+	Log           LogConfig           `json:"log"`
+	Proxy         ProxyConfig         `json:"proxy"`
+	Notification  NotificationConfig  `json:"notification"`
 }
 
 type ProgramConfig struct {
-	RssTime     int64  `json:"rss_time" clover:"RssTime"`
-	RenameTime  int64  `json:"rename_time" clover:"RenameTime"`
-	WebuiPort   int64  `json:"webui_port" clover:"WebuiPort"`
-	DataVersion string `json:"data_version" clover:"DataVersion"`
+	RssTime     int64  `json:"rss_time"`
+	RenameTime  int64  `json:"rename_time"`
+	WebuiPort   int64  `json:"webui_port"`
+	DataVersion string `json:"data_version"`
 }
 
 type DownloaderConfig struct {
-	Type     string `json:"type" clover:"Type"`
-	Host     string `json:"host" clover:"Host"`
-	Username string `json:"username" clover:"Username"`
-	Password string `json:"password" clover:"Password"`
-	Path     string `json:"path" clover:"Path"`
-	Ssl      bool   `json:"ssl" clover:"Ssl"`
+	Type     string `json:"type"`
+	Host     string `json:"host"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Path     string `json:"path"`
+	Ssl      bool   `json:"ssl"`
 }
 
 type RssParserConfig struct {
-	Enable     bool          `json:"enable" clover:"Enable"`
-	Type       string        `json:"type" clover:"Type"`
-	CustomUrl  string        `json:"custom_url" clover:"CustomUrl"`
-	Token      string        `json:"token" clover:"Token"`
-	EnableTmdb bool          `json:"enable_tmdb" clover:"EnableTmdb"`
-	Filter     []interface{} `json:"filter" clover:"Filter"`
-	Language   string        `json:"language" clover:"Language"`
+	Enable     bool          `json:"enable"`
+	Type       string        `json:"type"`
+	CustomUrl  string        `json:"custom_url"`
+	Token      string        `json:"token"`
+	EnableTmdb bool          `json:"enable_tmdb"`
+	Filter     []interface{} `json:"filter"`
+	Language   string        `json:"language"`
 }
 
 type BangumiManageConfig struct {
-	Enable           bool   `json:"enable" clover:"Enable"`
-	EpsComplete      bool   `json:"eps_complete" clover:"EpsComplete"`
-	RenameMethod     string `json:"rename_method" clover:"RenameMethod"`
-	GroupTag         bool   `json:"group_tag" clover:"GroupTag"`
-	RemoveBadTorrent bool   `json:"remove_bad_torrent" clover:"RemoveBadTorrent"`
+	Enable           bool   `json:"enable"`
+	EpsComplete      bool   `json:"eps_complete"`
+	RenameMethod     string `json:"rename_method"`
+	GroupTag         bool   `json:"group_tag"`
+	RemoveBadTorrent bool   `json:"remove_bad_torrent"`
 }
 
 type LogConfig struct {
-	DebugEnable bool `json:"debug_enable" clover:"DebugEnable"`
+	ConfigID    int  `json:"config_id"`
+	DebugEnable bool `json:"debug_enable"`
 }
 
 type ProxyConfig struct {
-	Enable   bool   `json:"enable" clover:"Enable"`
-	Type     string `json:"type" clover:"Type"`
-	Host     string `json:"host" clover:"Host"`
-	Port     int64  `json:"port" clover:"Port"`
-	Username string `json:"username" clover:"Username"`
-	Password string `json:"password" clover:"Password"`
+	Enable   bool   `json:"enable"`
+	Type     string `json:"type"`
+	Host     string `json:"host"`
+	Port     int64  `json:"port"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type NotificationConfig struct {
-	Enable bool   `json:"enable" clover:"Enable"`
-	Type   string `json:"type" clover:"Type"`
-	Token  string `json:"token" clover:"Token"`
-	ChatId string `json:"chat_id" clover:"ChatId"`
+	ConfigID int    `json:"config_id"`
+	Enable   bool   `json:"enable"`
+	Type     string `json:"type"`
+	Token    string `json:"token"`
+	ChatId   string `json:"chat_id"`
 }
 
-func (c *ConfigModel) FromDocument(d *document.Document) ConfigModel {
-	return ConfigModel{
-		Program: ProgramConfig{
-			RssTime:     d.Get("Program.RssTime").(int64),
-			RenameTime:  d.Get("Program.RenameTime").(int64),
-			WebuiPort:   d.Get("Program.WebuiPort").(int64),
-			DataVersion: d.Get("Program.DataVersion").(string),
-		},
-		Downloader: DownloaderConfig{
-			Type:     d.Get("Downloader.Type").(string),
-			Host:     d.Get("Downloader.Host").(string),
-			Username: d.Get("Downloader.Username").(string),
-			Password: d.Get("Downloader.Password").(string),
-			Path:     d.Get("Downloader.Path").(string),
-			Ssl:      d.Get("Downloader.Ssl").(bool),
-		},
-		RssParser: RssParserConfig{
-			Enable:     d.Get("RssParser.Enable").(bool),
-			Type:       d.Get("RssParser.Type").(string),
-			CustomUrl:  d.Get("RssParser.CustomUrl").(string),
-			Token:      d.Get("RssParser.Token").(string),
-			EnableTmdb: d.Get("RssParser.EnableTmdb").(bool),
-			Filter:     d.Get("RssParser.Filter").([]interface{}),
-			Language:   d.Get("RssParser.Language").(string),
-		},
-		BangumiManage: BangumiManageConfig{
-			Enable:           d.Get("BangumiManage.Enable").(bool),
-			EpsComplete:      d.Get("BangumiManage.EpsComplete").(bool),
-			RenameMethod:     d.Get("BangumiManage.RenameMethod").(string),
-			GroupTag:         d.Get("BangumiManage.GroupTag").(bool),
-			RemoveBadTorrent: d.Get("BangumiManage.RemoveBadTorrent").(bool),
-		},
-		Log: LogConfig{
-			DebugEnable: d.Get("Log.DebugEnable").(bool),
-		},
-		Proxy: ProxyConfig{
-			Enable:   d.Get("Proxy.Enable").(bool),
-			Type:     d.Get("Proxy.Type").(string),
-			Host:     d.Get("Proxy.Host").(string),
-			Port:     d.Get("Proxy.Port").(int64),
-			Username: d.Get("Proxy.Username").(string),
-			Password: d.Get("Proxy.Password").(string),
-		},
-		Notification: NotificationConfig{
-			Enable: d.Get("Notification.Enable").(bool),
-			Type:   d.Get("Notification.Type").(string),
-			Token:  d.Get("Notification.Token").(string),
-			ChatId: d.Get("Notification.ChatId").(string),
-		},
-	}
-}
-
-func InitConfigModel() *ConfigModel {
-	return &ConfigModel{
-		Program: ProgramConfig{
-			RssTime:     900,
-			RenameTime:  60,
-			WebuiPort:   7892,
-			DataVersion: "3.1.7",
-		},
-		Downloader: DownloaderConfig{
-			Type:     "qbittorrent",
-			Host:     "127.0.0.1:8080",
-			Username: "admin",
-			Password: "adminadmin",
-			Path:     "/downloads/Bangumi",
-			Ssl:      false,
-		},
-		RssParser: RssParserConfig{
-			Enable:     true,
-			Type:       "mikan",
-			CustomUrl:  "mikanani.me",
-			Token:      "",
-			EnableTmdb: false,
-			Filter: []interface{}{
-				"720",
-				"\\d+-\\d+",
+func InitConfigModel() *Config {
+	return &Config{
+		ConfigContent: ConfigContent{
+			Program: ProgramConfig{
+				RssTime:     900,
+				RenameTime:  60,
+				WebuiPort:   7892,
+				DataVersion: "3.1.7",
 			},
-			Language: "zh",
-		},
-		BangumiManage: BangumiManageConfig{
-			Enable:           true,
-			EpsComplete:      false,
-			RenameMethod:     "pn",
-			GroupTag:         false,
-			RemoveBadTorrent: false,
-		},
-		Log: LogConfig{
-			DebugEnable: false,
-		},
-		Proxy: ProxyConfig{
-			Enable:   false,
-			Type:     "http",
-			Host:     "",
-			Port:     1080,
-			Username: "",
-			Password: "",
-		},
-		Notification: NotificationConfig{
-			Enable: false,
-			Type:   "telegram",
-			Token:  "",
-			ChatId: "",
+			Downloader: DownloaderConfig{
+				Type:     "qbittorrent",
+				Host:     "127.0.0.1:8080",
+				Username: "admin",
+				Password: "adminadmin",
+				Path:     "/downloads/Bangumi",
+				Ssl:      false,
+			},
+			RssParser: RssParserConfig{
+				Enable:     true,
+				Type:       "mikan",
+				CustomUrl:  "mikanani.me",
+				Token:      "",
+				EnableTmdb: false,
+				Filter: []interface{}{
+					"720",
+					"\\d+-\\d+",
+				},
+				Language: "zh",
+			},
+			BangumiManage: BangumiManageConfig{
+				Enable:           true,
+				EpsComplete:      false,
+				RenameMethod:     "pn",
+				GroupTag:         false,
+				RemoveBadTorrent: false,
+			},
+			Log: LogConfig{
+				ConfigID:    0,
+				DebugEnable: false,
+			},
+			Proxy: ProxyConfig{
+				Enable:   false,
+				Type:     "http",
+				Host:     "",
+				Port:     1080,
+				Username: "",
+				Password: "",
+			},
+			Notification: NotificationConfig{
+				Enable: false,
+				Type:   "telegram",
+				Token:  "",
+				ChatId: "",
+			},
 		},
 	}
 }

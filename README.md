@@ -29,10 +29,6 @@
 > Golang, in my opinion, achieves a perfect middle ground between DX and Runtime Performance. This is a hobby project to force me to relearn the semantics of Golang, and so I don't want to make my life harder by trying to be picky about server frameworks or writing high-level abstractions when Go's solutions are more than battle-proven.
   
 > It also just happens to be about [as performant as Rust](https://youtu.be/Z0GX2mTUtfo) in a Server context.
-### - Why CloverDB + Go-cache instead of MySQL/Postgre/SQLite/Genji?
-> My initial target was a lightweight embeddable storage solution that also happened to be schemaless. Genji would have been my choice if database/sql or the built-in methods were a little easier to wrap my head around.
-
-> I did attempt some brief tests with SQLite on WAL mode, and it didn't significantly outperform my current solution while giving up a lot of DX. Considering there are minimal concurrent reads, and even eventually consistent writes are more than capable in a single-user context, I cba.  
 
 ## AutoBangumi 功能说明
 

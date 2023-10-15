@@ -23,11 +23,11 @@ func host_ip() string {
 
 	if v6 {
 		return "::"
-	} else if ip_set {
-		return ip
-	} else {
-		return "0.0.0.0"
 	}
+	if ip_set {
+		return ip
+	}
+	return "0.0.0.0"
 
 }
 
@@ -84,7 +84,7 @@ func Init() {
 	// Default port
 	port := "7892"
 	if exists {
-		port = fmt.Sprintf("%d", cfg.(models.ConfigModel).Program.WebuiPort)
+		port = fmt.Sprintf("%d", cfg.(models.Config).Program.WebuiPort)
 	}
 
 	// Register server parameters

@@ -16,7 +16,7 @@ func ProgramStatusHandler(w http.ResponseWriter, r *http.Request) {
 	cfg, exists := db.Cache.Get("config")
 	res, err := json.Marshal(map[string]interface{}{
 		"status":    exists,
-		"version":   cfg.(models.ConfigModel).Program.DataVersion,
+		"version":   cfg.(models.Config).Program.DataVersion,
 		"first_run": false,
 	})
 	if err != nil {
