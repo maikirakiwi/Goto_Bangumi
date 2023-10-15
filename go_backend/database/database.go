@@ -257,7 +257,7 @@ func testContent() {
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
-	for i := 0; i < 8; i++ {
+	for i := 0; i < 9; i++ {
 		commit := document.NewDocumentOf(bangumitest[i])
 		db.InsertOne("bangumi", commit)
 	}
@@ -304,9 +304,9 @@ func FindOne(collection string, key string, value interface{}) (*document.Docume
 	doc, err := Conn.FindFirst(query.NewQuery(collection).Where(query.Field(key).Eq(value)))
 	if err != nil {
 		return nil, err
-	} else {
-		return doc, nil
 	}
+
+	return doc, nil
 }
 
 func UpdateOne(collection string, key string, value interface{}, changingKey string, changingValue interface{}) error {

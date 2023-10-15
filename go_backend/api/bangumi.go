@@ -44,21 +44,21 @@ func getAllBangumiHandler(w http.ResponseWriter, r *http.Request) {
 func getBangumiHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := fetchBangumiID(r)
 	if err != nil {
-		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %s", err)
+		log.Error().Msgf("Parsing Error on /api/v1/bangumi/get/{bangumi_id}: %s", err)
 		writeResponse(w, r, 406, fmt.Sprintf("Can't find data with %d", id), fmt.Sprintf("无法找到 id %d 的数据", id))
 		return
 	}
 
 	res, err := db.FindOne("bangumi", "ID", id)
 	if err != nil || res == nil {
-		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %s", err)
+		log.Error().Msgf("DB Error on /api/v1/bangumi/get/{bangumi_id}: %s", err)
 		writeResponse(w, r, 406, fmt.Sprintf("Can't find data with %d", id), fmt.Sprintf("无法找到 id %d 的数据", id))
 		return
 	}
 
 	json, err := json.Marshal(new(models.Bangumi).FromDocument(res))
 	if err != nil {
-		log.Error().Msgf("Error on /api/v1/bangumi/get/{bangumi_id}: %s", err)
+		log.Error().Msgf("Marshal Error on /api/v1/bangumi/get/{bangumi_id}: %s", err)
 		writeException(w, r, 500, "Internal Server Error")
 		return
 	}

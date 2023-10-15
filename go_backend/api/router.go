@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/arl/statsviz"
 	"github.com/flosch/pongo2/v6"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
@@ -40,11 +41,21 @@ func jwtFromCookie(r *http.Request) string {
 func Router() http.Handler {
 	r := chi.NewRouter()
 
+	// Dev mode middlewares
 	if len(os.Args) > 1 && os.Args[1] == "dev" {
 		r.Use(hlog.NewHandler(log.Logger))
 		r.Use(hlog.AccessHandler(func(r *http.Request, status, size int, duration time.Duration) {
 			hlog.FromRequest(r).Info().Msgf("%s -> %d %s %s", strings.Replace(r.RemoteAddr, "127.0.0.1", "", 1), status, r.Method, r.URL)
 		}))
+
+		// Statsviz
+		srv, _ := statsviz.NewServer()
+		r.Get("/debug/statsviz/ws", srv.Ws())
+		r.Get("/debug/statsviz", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/debug/statsviz/", http.StatusMovedPermanently)
+		})
+		r.Handle("/debug/statsviz/*", srv.Index())
+		log.Info().Msg("Statsviz available at /debug/statsviz")
 	}
 
 	// Secured routes

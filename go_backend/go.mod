@@ -3,6 +3,7 @@ module Auto_Bangumi/v2
 go 1.21.1
 
 require (
+	github.com/arl/statsviz v0.6.0
 	github.com/fatih/structs v1.1.0
 	github.com/flosch/pongo2/v6 v6.0.0
 	github.com/go-chi/chi/v5 v5.0.10
@@ -33,6 +34,7 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/flatbuffers v2.0.6+incompatible // indirect
 	github.com/google/orderedcode v0.0.1 // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/klauspost/compress v1.15.9 // indirect
 	github.com/lestrrat-go/blackmagic v1.0.1 // indirect
 	github.com/lestrrat-go/httpcc v1.0.1 // indirect
