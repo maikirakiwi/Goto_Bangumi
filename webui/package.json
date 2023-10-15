@@ -6,6 +6,7 @@
   "scripts": {
     "prepare": "cd .. && husky install ./webui/.husky",
     "build": "vue-tsc --noEmit && vite build",
+    "build:go": "vite build && cd ../go_backend && go build -o ../bin/goto_bangumi",
     "dev": "vite",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

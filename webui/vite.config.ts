@@ -92,6 +92,7 @@ export default defineConfig({
   },
   build: {
     cssCodeSplit: false,
+    outDir: '../bin/dist',
   },
   resolve: {
     alias: {

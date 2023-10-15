@@ -24,6 +24,13 @@
 
 **兼容目标为 [AutoBangumi 3.1.7](https://github.com/EstrellaXD/Auto_Bangumi/releases/tag/3.1.7)，具体文档 TBA。**
 
+## 手动编译指南
+1. 请先安装 [Node.js LTS](https://nodejs.org) 和最新的 [Go](https://go.dev/dl)。
+2. `cd webui` 里用 `npm install && npm run build:go` 在根目录下编译出 /bin
+3. `cd ../bin` 并用 `./goto_bangumi` 执行编译好的二进制程序。
+
+如在 3. 下无法执行，则有可能需要将二进制程序设为可执行的。例：`chmod +x ./goto_bangumi` 
+
 ## FAQ (待翻译）
 ### - Why not C/C++/Rust?
 > Golang, in my opinion, achieves a perfect middle ground between DX and Runtime Performance. This is a hobby project to force me to relearn the semantics of Golang, and so I don't want to make my life harder by trying to be picky about server frameworks or writing high-level abstractions when Go's solutions are more than battle-proven.
