@@ -5,15 +5,14 @@ import {
   NMessageProvider,
 } from 'naive-ui';
 
-
 const theme: GlobalThemeOverrides = {
   Spin: {
     color: '#fff',
   },
 };
 
-const { refresh, isLogin } = useAuth();
-if (isLogin.value) {
+const { refresh, isLoggedin } = useAuth();
+if (isLoggedin.value === true) {
   refresh();
 }
 </script>
