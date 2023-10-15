@@ -22,7 +22,7 @@
 本项目是社区基于 [AutoBangumi](https://github.com/EstrellaXD/Auto_Bangumi/) 的 Golang 后端实现。只需要在 [Mikan Project][mikan] 等网站上订阅番剧，就可以全自动追番。
 并且整理完成的名称和目录可以直接被 [Plex][plex]、[Jellyfin][plex] 等媒体库软件识别，无需二次刮削。
 
-**兼容目标为 [AutoBangumi 3.1.7](https://github.com/EstrellaXD/Auto_Bangumi/releases/tag/3.1.7)，具体文档 TBA。**
+**兼容目标为 [AutoBangumi 3.1.10](https://github.com/EstrellaXD/Auto_Bangumi/releases/tag/3.1.10)，具体文档 TBA。**
 
 ## 手动编译指南
 1. 请先安装 [Node.js LTS](https://nodejs.org) 和最新的 [Go](https://go.dev/dl)。

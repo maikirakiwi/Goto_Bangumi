@@ -100,7 +100,7 @@ func InitConfigModel() *Config {
 				RssTime:     900,
 				RenameTime:  60,
 				WebuiPort:   7892,
-				DataVersion: "3.1.7",
+				DataVersion: "3.1.10",
 			},
 			Downloader: DownloaderConfig{
 				Type:     "qbittorrent",

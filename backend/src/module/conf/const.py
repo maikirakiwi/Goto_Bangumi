@@ -6,7 +6,7 @@ DEFAULT_SETTINGS = {
         "sleep_time": 7200,
         "times": 20,
         "webui_port": 7892,
-        "data_version": "3.1.7",
+        "data_version": "3.1.10",
     },
     "downloader": {
         "type": "qbittorrent",

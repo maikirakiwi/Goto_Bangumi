@@ -31,6 +31,13 @@ func host_ip() string {
 
 }
 
+func is_dev() bool {
+	if len(os.Args) > 1 && os.Args[1] == "dev" {
+		return true
+	}
+	return false
+}
+
 var server *http.Server
 
 // Graceful shutdown handler
@@ -47,7 +54,7 @@ func main() {
 	signal.Notify(signalCh, syscall.SIGINT, syscall.SIGTERM)
 
 	// Start the server in a separate goroutine
-	go Init()
+	go Init(is_dev())
 
 	sig := <-signalCh
 	log.Warn().Msgf("GotoBangumi received signal %v. Hammer timeout is set to 30 seconds.", sig)
@@ -64,7 +71,7 @@ func main() {
 	api.ClearLog()
 }
 
-func Init() {
+func Init(dev bool) {
 	start := time.Now()
 
 	// Set logging pref
@@ -72,7 +79,7 @@ func Init() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
 	// Database Setup
-	db.Init()
+	db.Init(dev)
 	defer db.Teardown()
 
 	log.Info().Msg("[1/1] Database Initialized.")
@@ -90,7 +97,7 @@ func Init() {
 	// Register server parameters
 	server = &http.Server{
 		Addr:    host_ip() + ":" + port,
-		Handler: api.Router(),
+		Handler: api.Router(dev),
 	}
 
 	log.Info().Msgf("GotoBangumi initialized in %s. Listening on %s. ", time.Since(start).String(), server.Addr)

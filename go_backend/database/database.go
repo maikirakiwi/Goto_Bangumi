@@ -261,8 +261,8 @@ func testContent() {
 	db.Create(&bangumitest)
 }
 
-func Init() {
-	if len(os.Args) > 1 && os.Args[1] == "dev" {
+func Init(dev bool) {
+	if dev {
 		log.Info().Msg("Development mode detected. Skipping JWT auth; Removing data directory; Adding sample data.")
 
 		err := os.RemoveAll("./data")

@@ -34,6 +34,7 @@ export const useAuth = createSharedComposable(() => {
     const { execute, onResult, onError } = useApi(apiAuth.login, {
       message: {
         success: 'Login Success!',
+        fail: 'Login Failed!',
       },
     });
 
@@ -46,7 +47,7 @@ export const useAuth = createSharedComposable(() => {
       const error = err as ApiError;
 
       if (error.status === 404) {
-        message.error('请更新AutoBangumi!');
+        message.error('请更新 GotoBangumi!');
       } else if (error.status === 401) {
         message.error(err.msg_zh);
       }

@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
@@ -38,11 +37,11 @@ func jwtFromCookie(r *http.Request) string {
 	return cookie.Value
 }
 
-func Router() http.Handler {
+func Router(dev bool) http.Handler {
 	r := chi.NewRouter()
 
 	// Dev mode middlewares
-	if len(os.Args) > 1 && os.Args[1] == "dev" {
+	if dev {
 		r.Use(hlog.NewHandler(log.Logger))
 		r.Use(hlog.AccessHandler(func(r *http.Request, status, size int, duration time.Duration) {
 			hlog.FromRequest(r).Info().Msgf("%s -> %d %s %s", strings.Replace(r.RemoteAddr, "127.0.0.1", "", 1), status, r.Method, r.URL)
@@ -60,8 +59,8 @@ func Router() http.Handler {
 
 	// Secured routes
 	r.Group(func(r chi.Router) {
-		// jwt middlewares, disabled in dev mode
-		if len(os.Args) < 2 {
+		// jwt middlewares, not loaded in dev mode
+		if !dev {
 			r.Use(jwtVerifier(jwtInstance))
 			r.Use(verifyAccessToken)
 		}
