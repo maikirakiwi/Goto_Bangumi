@@ -27,9 +27,10 @@ func RespOk(resp *http.Response, err error) error {
 		return err
 	} else if resp.Status != "200 OK" { // check for correct status code
 		return fmt.Errorf("%w: %s", ErrBadResponse, resp.Status)
-	} else {
-		return nil
 	}
+
+	return nil
+
 }
 
 func RespBodyOk(body io.ReadCloser, bizErr error) error {

@@ -21,9 +21,10 @@ func ProgramStatusHandler(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		writeException(w, r, 500, "Internal Server Error")
-	} else {
-		w.Write(res)
+		return
 	}
+
+	w.Write(res)
 }
 
 func LogOutputHandler(w http.ResponseWriter, r *http.Request) {
