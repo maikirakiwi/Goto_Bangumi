@@ -1,6 +1,6 @@
 module Auto_Bangumi/v2
 
-go 1.21.1
+go 1.21.3
 
 require (
 	github.com/arl/statsviz v0.6.0
