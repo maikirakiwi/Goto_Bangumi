@@ -90,7 +90,6 @@ export const useAuth = createSharedComposable(() => {
 
     onResult((res) => {
       if (res.message === 'update success') {
-        isLoggedin.value = false;
         clearUser();
       } else {
         user.password = '';

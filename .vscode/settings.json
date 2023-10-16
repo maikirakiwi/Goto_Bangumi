@@ -16,4 +16,5 @@
     "mikan",
     "starlette"
   ],
+  "discord.enabled": true,
 }
