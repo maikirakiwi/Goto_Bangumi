@@ -5,7 +5,7 @@
 <p align="center">
     <img title="release date" src="https://img.shields.io/github/release-date/maikirakiwi/Goto_Bangumi" alt="">
     <img title="active issues" src="https://app.deepsource.com/gh/maikirakiwi/Goto_Bangumi.svg/?label=active+issues&show_trend=true&token=3Yw_e7Z12Jeu2AUix9d-PrHU" alt="">
-    <img title="go version" src="https://img.shields.io/github/go-mod/go-version/maikirakiwi/Goto_Bangumi/go-main%2Fgo_backend?label=go" alt="">
+    <img title="go version" src="https://img.shields.io/github/go-mod/go-version/maikirakiwi/Goto_Bangumi/go-main?label=go" alt="">
 </p>
 
 <p align="center">
