@@ -26,9 +26,10 @@
 
 ## 手动编译指南
 1. 请先安装 [Node.js LTS](https://nodejs.org) 和最新的 [Go](https://go.dev/dl)。
-2. `cd webui` 里用 `npm install && npm run build:go` 在根目录下编译出 /bin
-3. `cd ../bin` 并用 `./goto_bangumi` 执行编译好的二进制程序。
+2. `cd AB/webui` 里用 `npm install && npm run build:go`
+3. `cd ../../bin` 并用 `./goto_bangumi` 执行编译好的二进制程序。
 
+如在 2. 下显示无 `AB` 目录，请执行 `git submodule update --init --recursive`
 如在 3. 下无法执行，则有可能需要将二进制程序设为可执行的。例：`chmod +x ./goto_bangumi` 
 执行时可以添加 `dev` 参数来进入开发环境，但请**千万**不要在生产环境下使用。
 

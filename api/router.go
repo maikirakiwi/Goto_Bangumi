@@ -14,7 +14,7 @@ import (
 )
 
 // Faster to compile first at startup
-var index = pongo2.Must(pongo2.FromFile("./dist/index.html"))
+var index = pongo2.Must(pongo2.FromFile("./webui/index.html"))
 
 func templater(w http.ResponseWriter, r *http.Request) {
 	err := index.ExecuteWriter(pongo2.Context{"query": r.FormValue("query")}, w)
