@@ -107,8 +107,8 @@ func Router(dev bool) http.Handler {
 		r.Post("/api/v1/auth/login", loginHandler)
 
 		r.Get("/", templater)
-		r.Handle("/assets/*", http.StripPrefix("/assets/", http.FileServer(http.Dir("./dist/assets"))))
-		r.Handle("/images/*", http.StripPrefix("/images/", http.FileServer(http.Dir("./dist/images"))))
+		r.Handle("/assets/*", http.StripPrefix("/assets/", http.FileServer(http.Dir("./webui/assets"))))
+		r.Handle("/images/*", http.StripPrefix("/images/", http.FileServer(http.Dir("./webui/images"))))
 	})
 
 	return r
