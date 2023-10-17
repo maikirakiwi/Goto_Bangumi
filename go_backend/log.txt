@@ -1,7 +1,0 @@
-{"level":"warn","time":1697191073,"message":"GotoBangumi received signal interrupt. Hammer timeout is set to 30 seconds."}
-{"level":"info","time":1697191073,"message":"GotoBangumi has gracefully shutdown."}
-{"level":"info","time":"2023-10-13T02:57:55-07:00","message":"Database Initialized."}
-{"level":"info","time":1697191075,"message":"GotoBangumi initialized in 16.048167ms. Listening on 0.0.0.0:7892. "}
-{"level":"info","time":1697191075,"message":"Authors: EstrellaXD Twitter: https://twitter.com/Estrella_Pan"}
-{"level":"info","time":1697191075,"message":"Authors: Rewrite0 GitHub: https://github.com/Rewrite0"}
-{"level":"info","time":1697191075,"message":"Authors: Maikiwi Twitter: https://twitter.com/notmaikiwi"}

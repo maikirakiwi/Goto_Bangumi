@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cd webui
+cd ./AB/webui
 npm install && npm run build
-mv ./dist ../bin/dist
-cd ../go_backend
+mv ./dist ../../bin/dist
+cd ../../go_backend
 go build -o ../bin/GotoBangumi 
